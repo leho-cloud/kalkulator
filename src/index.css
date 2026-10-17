@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-base text-white antialiased;
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  :focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+  }
+}
+
+/* A LED-fal "tartalma": végtelenül futó színátmenet, GPU-barát eltolással. */
+.led-tartalom {
+  position: relative;
+  overflow: hidden;
+  background: #9e7fff;
+}
+
+.led-tartalom::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 200%;
+  background: linear-gradient(
+    90deg,
+    #9e7fff,
+    #38bdf8,
+    #f472b6,
+    #9e7fff,
+    #38bdf8,
+    #f472b6,
+    #9e7fff
+  );
+  animation: led-futas 14s linear infinite;
+}
+
+@keyframes led-futas {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes emelkedes {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.megjelenes {
+  animation: emelkedes 0.5s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
