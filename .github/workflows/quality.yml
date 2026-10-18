@@ -1,0 +1,35 @@
+name: Kódellenőrzés
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: React / Vite ellenőrzés
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Függőségek
+        run: npm ci
+      - name: TypeScript ellenőrzés
+        run: npx tsc -b --pretty false
+      - name: ESLint
+        run: npm run lint
+      - name: Build
+        run: npm run build
