@@ -1,0 +1,42 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+const require=createRequire('/opt/node22/lib/node_modules/');
+const {chromium}=require('playwright');
+const url='file://'+new URL('../dist/index.html',import.meta.url).pathname;
+const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--no-sandbox']});
+const errors=[];
+const T1='3 flight case 101×66×86 cm 127 kg/db\n1 raklap 120×80×110 cm 180 kg\nVasúti díj:\nEXW Shenzhen - CFS BUD 185 USD/cbm via Xian\nDoc ktg 75 EUR\n+ vámkezelés';
+for (const [name,vp] of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]) {
+const ctx=await b.newContext({viewport:vp,deviceScaleFactor:2,isMobile:name==='mobile'});
+const p=await ctx.newPage(); p.on('pageerror',e=>errors.push(name+': '+e.message));
+await p.goto(url); await p.waitForTimeout(600);
+await p.fill('#inText',T1); await p.click('#inParse');
+let t=await p.evaluate(()=>window.__intake.totals());
+assert.ok(Math.abs(t.gross-561)<1e-6, 'gross '+t.gross); assert.ok(Math.abs(t.volume-(3*1.01*0.66*0.86+1.2*0.8*1.1))<1e-6,'vol '+t.volume); assert.equal(t.count,4);
+let c=await p.evaluate(()=>{const c=window.__doc.ctx();return {rows:c.rows.map(r=>({k:r.key,n:r.name,b:r.basis,usd:r.usd})),excl:c.extraExcl,led:c.led}});
+assert.equal(c.rows.length,1); assert.equal(c.rows[0].k,'rail'); assert.ok(c.rows[0].n.includes('via Xian'));
+const exp=185*Math.max(1,Math.max(t.volume,561/333))+75*1.1127; assert.ok(Math.abs(c.rows[0].usd-exp)<1e-6,'usd');
+assert.deepEqual(c.excl,['vámkezelés']);
+await p.click('#docPreview'); await p.waitForTimeout(200);
+const dt=await p.textContent('#docSheet'); assert.ok(dt.includes('561 kg')); assert.ok(dt.includes('4 csomag')); assert.ok(dt.includes('vámkezelés'));
+assert.ok(!/185|USD|Doc ktg/.test(dt),'nincs belső díj');
+if(name==='mobile') await p.screenshot({path:'/tmp/in-doc-mobile.png'});
+await p.click('#docClose');
+await p.click('#docText'); const txt=await p.inputValue('#docTextOut'); assert.ok(txt.includes('Vasúti fuvar')); assert.ok(txt.includes('561 kg bruttó'));
+if(name==='desktop') console.log(txt);
+await p.selectOption('#inOut .in-tbl select >> nth=0','t'); t=await p.evaluate(()=>window.__intake.totals()); assert.ok(Math.abs(t.gross-307)<1e-6);
+await p.setInputFiles('#inFile','/tmp/pl.xlsx'); await p.waitForTimeout(500);
+t=await p.evaluate(()=>window.__intake.totals()); assert.equal(t.gross,561); assert.equal(t.volume,2.78); assert.equal(t.count,4);
+c=await p.evaluate(()=>window.__doc.ctx().rows.map(r=>r.key)); assert.deepEqual(c,['air','sea','rail']);
+await p.setInputFiles('#inFile','/tmp/pl.docx'); await p.waitForTimeout(500);
+t=await p.evaluate(()=>window.__intake.totals()); assert.ok(Math.abs(t.gross-381)<1e-6,'docx '+t.gross);
+await p.setInputFiles('#inFile',{name:'a.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF')}); await p.waitForTimeout(200);
+assert.ok((await p.textContent('#inFileMsg')).includes('illeszd be'));
+await p.fill('#inText','ROE BP2V2 6×3 m fal\nADJ VS3IP 24 db'); await p.click('#inParse');
+assert.equal(await p.locator('.in-cab').count(),2);
+await p.click('.in-cab >> nth=0 >> button'); await p.waitForTimeout(200);
+const k=await p.evaluate(()=>({q:window.__ledfuvar.qty})); assert.equal(k.q,12*6);
+if(name==='desktop'){ await p.fill('#inText',T1); await p.click('#inParse'); await p.locator('#s-ugyfel').screenshot({path:'/tmp/in-form.png'}); }
+await ctx.close();
+}
+await b.close(); assert.deepEqual(errors,[]); console.log('intake.test: szöveg, táblázat, xlsx, docx, LED-kabinet, ajánlatszöveg rendben');

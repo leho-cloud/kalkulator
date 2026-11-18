@@ -136,7 +136,14 @@
   </section>
 
   <section class="card panel" id="s-ugyfel">
-    <div class="card-h"><span class="no">5</span><div><h2>Ügyfélnek: PDF / nyomtatás</h2><p>TZSVTAV-arculatú fuvarköltség-becslés, amit a LED-fal ajánlathoz csatolhatsz</p></div></div>
+    <div class="card-h"><span class="no">5</span><div><h2>Ügyfélnek: ajánlat, PDF, nyomtatás</h2><p>Illeszd be vagy töltsd fel a csomaglistát / szállítmányozói ajánlatot – kiszámolja a tömeget, a térfogatot, és megírja az ajánlatot</p></div></div>
+    <div class="intake">
+      <label class="qlbl" for="inText">Adatok beillesztése: csomaglista, méretek, tömegek, LED-fal típus, szállítmányozói díjak</label>
+      <textarea id="inText" rows="6" spellcheck="false" placeholder="pl.&#10;3 flight case 101×66×86 cm 127 kg/db&#10;1 raklap 120×80×110 cm 180 kg&#10;Vasúti díj: EXW Shenzhen - CFS BUD 185 USD/cbm via Xian&#10;Doc ktg 75 EUR&#10;+ vámkezelés"></textarea>
+      <div class="qbtns"><button type="button" class="btn primary sm" id="inParse">Értelmezés</button><label class="btn ghost sm filebtn">Fájl feltöltése<input type="file" id="inFile" accept=".txt,.csv,.tsv,.eml,.xlsx,.docx,.pdf"></label><button type="button" class="chip" id="inClear">Törlés</button></div>
+      <p class="src" id="inFileMsg">Feltölthető: Excel (.xlsx), Word (.docx), CSV, TXT, e-mail (.eml). PDF-ből másold be a szöveget.</p>
+      <div id="inOut" aria-live="polite"></div>
+    </div>
     <div class="grid g2">
       <label>Ügyfél neve<input id="docClient" type="text" autocomplete="off" placeholder="pl. Minta Rendezvény Kft."></label>
       <label>Ajánlat / projekt hivatkozás<input id="docRef" type="text" autocomplete="off" placeholder="pl. Ajánlat 2026/118 · P3.9 kültéri fal"></label>
@@ -157,7 +164,9 @@
     <label class="full">Megjegyzés az ügyfélnek (nem kötelező)<textarea id="docNote" rows="2" placeholder="pl. A szállítás a gyártás befejezése után indul."></textarea></label>
     <label class="full">Lábléc: elérhetőség<input id="docContact" type="text" autocomplete="off" placeholder="pl. név · telefon · e-mail · weboldal"></label>
     <p class="src">A felár és a díjak forrása nem jelenik meg a kimutatáson. PDF: a nyomtatási ablakban válaszd a „Mentés PDF-ként” lehetőséget (telefonon: Megosztás → Nyomtatás).</p>
-    <div class="docbtns"><button type="button" class="btn ghost" id="docPreview">Előnézet</button><button type="button" class="btn primary" id="docPrint">PDF / Nyomtatás</button></div>
+    <div class="docbtns"><button type="button" class="btn ghost" id="docPreview">Előnézet</button><button type="button" class="btn primary" id="docPrint">PDF / Nyomtatás</button><button type="button" class="btn ghost" id="docText">Ajánlatszöveg (e-mailhez)</button></div>
+    <textarea id="docTextOut" class="doctext" rows="14" hidden spellcheck="true"></textarea>
+    <div class="docbtns"><button type="button" class="chip" id="docCopy" hidden>Másolás</button></div>
   </section>
 
   <section class="card panel" id="s-szotar">

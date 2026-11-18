@@ -359,4 +359,28 @@ body.doc-open{overflow:hidden}
 .fwd li{margin:2px 0}
 .fwd-links{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:auto;padding-top:4px;font-size:.84rem}
 .fwd-links a{font-weight:600}
+/* Adatbeolvasás */
+.intake{display:grid;gap:8px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+#inText,.doctext{width:100%;min-height:130px;padding:12px;border-radius:var(--rs);border:1px solid var(--line);background:#0a1120;color:var(--text);font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical}
+.doctext{font:14px/1.55 "Inter",system-ui,sans-serif;min-height:260px;margin-top:10px}
+#inText:focus,.doctext:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,209,255,.18)}
+.btn.sm{min-height:40px;padding:0 16px;font-size:.88rem}
+.filebtn{display:inline-flex;align-items:center;cursor:pointer;position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.in-h{margin:10px 0 4px;font-size:.92rem}
+.in-tbl{width:100%;border-collapse:collapse;font-size:.84rem}
+.in-tbl th{text-align:left;color:var(--muted);font-weight:600;font-size:.76rem;padding:6px;border-bottom:1px solid var(--line)}
+.in-tbl td{padding:6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.in-tbl td.l{color:var(--muted);font-size:.78rem;max-width:280px;overflow-wrap:anywhere}
+.in-tbl select,.in-q select{height:34px;font-size:.8rem;padding:0 28px 0 8px;width:auto}
+.in-sum{margin-top:8px}
+.in-cab{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:var(--rs);background:var(--card2);font-size:.88rem}
+.in-q{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.in-q li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 10px;border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:var(--rs);background:var(--card2)}
+.in-q li.q-freight{border-left-color:var(--rail)}.in-q li.q-fee{border-left-color:var(--accent2)}.in-q li.q-excluded{border-left-color:var(--warn)}
+.in-q code{flex:1 1 220px;font:12.5px ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.in-q .tagm{font-size:.75rem;color:var(--muted)}
+.in-q small{flex-basis:100%;font-size:.75rem}
+.warnc{color:var(--warn)}
+@media (max-width:640px){.in-tbl th:nth-child(1),.in-tbl td.l{display:none}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode .bar i{transition:none}}
