@@ -15,7 +15,7 @@
     <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
   </div>
   <div class="wrap"><nav class="steps" aria-label="Lépések">
-    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-ugyfel"><b>5</b>Ügyfélnek</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-szall"><b>≡</b>Szállítmányozók</a><a href="#s-forras"><b>i</b>Források</a>
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-ugyfel"><b>5</b>Ügyfélnek</a><a href="#s-kovetes"><b>6</b>Követés</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-szall"><b>≡</b>Szállítmányozók</a><a href="#s-forras"><b>i</b>Források</a>
   </nav></div>
 </header>
 
@@ -167,6 +167,37 @@
     <div class="docbtns"><button type="button" class="btn ghost" id="docPreview">Előnézet</button><button type="button" class="btn primary" id="docPrint">PDF / Nyomtatás</button><button type="button" class="btn ghost" id="docText">Ajánlatszöveg (e-mailhez)</button></div>
     <textarea id="docTextOut" class="doctext" rows="14" hidden spellcheck="true"></textarea>
     <div class="docbtns"><button type="button" class="chip" id="docCopy" hidden>Másolás</button></div>
+  </section>
+
+  <section class="card panel" id="s-kovetes">
+    <div class="card-h"><span class="no">6</span><div><h2>Vasúti szállítmány követése</h2><p>Xi'an → Budapest vázlatos útvonaltérkép, utolsó jelentett állomás, becsült érkezés</p></div></div>
+    <div class="tr-wrap">
+      <div class="tr-mapbox" id="trMap"></div>
+      <dl class="kpis tr-kpis" id="trKpi"></dl>
+      <p class="warn show tr-warn" id="trWarn" hidden></p>
+    </div>
+    <div class="grid g4 docrow">
+      <label>Indulás Xi'anból<input id="trDep" type="date"></label>
+      <label>Utolsó jelentett állomás<select id="trLast"></select></label>
+      <label>Jelentés dátuma<span class="unit"><input id="trLastDate" type="date"></span></label>
+      <label>&nbsp;<button type="button" class="chip" id="trToday">Ma jelentették</button></label>
+    </div>
+    <div class="grid g2 docrow">
+      <label>Vonat / konténer szám<input id="trTrain" type="text" autocomplete="off" placeholder="pl. TGHU1234567"></label>
+      <label>Hivatkozás (ügyfélnek)<input id="trRef" type="text" autocomplete="off" placeholder="pl. Ajánlat 2026/118 · P3.9 kültéri fal"></label>
+    </div>
+    <label class="full">Megjegyzés az állapotüzenethez<input id="trNote" type="text" autocomplete="off" placeholder="pl. A konténer a jövő héten érkezik a BILK-be."></label>
+    <div class="docbtns"><button type="button" class="btn ghost" id="trText">Állapotüzenet az ügyfélnek</button></div>
+    <textarea id="trTextOut" class="doctext" rows="7" hidden></textarea>
+    <div class="tr-links">
+      <h3 class="in-h">Hivatalos követés</h3>
+      <ul>
+        <li><a href="https://ec.95306.cn/fwzn/" target="_blank" rel="noopener noreferrer">China Railway 95306 ↗</a> – a kínai vasút hivatalos árufuvarozási portálja és alkalmazása. Követéshez a fuvarlevélszám és a feladáskor megadott adatok (pl. telefonszám) kellenek; ezt a szállítmányozótól kérd. Az országhatáron túli szakaszok lefedettségét ellenőrizd.</li>
+        <li><a href="https://apps.apple.com/cn/app/id1492883496" target="_blank" rel="noopener noreferrer">Csangan-ügyfélalkalmazás (Xi'an) ↗</a> – a Xi'anból induló vonatok üzemeltetőjének alkalmazása, menet közbeni követéssel a szerződött ügyfeleknek.</li>
+        <li>A szállítmányozó saját követése (konténerszám alapján) általában a teljes útvonalat mutatja – a fenti állomást az ő jelentése alapján frissítsd.</li>
+      </ul>
+      <p class="src">A térkép vázlatos (légvonalas szakaszok, tipikus útvonal Kazahsztánon, Oroszországon és Belaruszon át). Az oldal nem kérdezi le automatikusan a 95306-ot: ehhez bejelentkezés és fuvarlevélszám kell, nyilvános lekérdező felülete nincs.</p>
+    </div>
   </section>
 
   <section class="card panel" id="s-szotar">
