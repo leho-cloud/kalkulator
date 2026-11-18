@@ -234,6 +234,98 @@ textarea#qText:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3p
   .gdl dd{border-top:0;padding-top:0}
   .qcalc li{flex-direction:column;gap:0}
 }
+/* Ügyfél-kimutatás: űrlap */
+.grid.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.docrow{margin-top:10px}
+label.chk{display:flex;align-items:center;gap:9px;grid-template-rows:none;min-height:var(--h);color:var(--text);font-size:.86rem;cursor:pointer}
+label.chk input{width:20px;height:20px;min-width:20px;accent-color:#be1d2f;margin:0}
+label.full{display:grid;grid-template-rows:auto;margin-top:10px}
+#s-ugyfel textarea{width:100%;padding:10px 12px;border-radius:var(--rs);border:1px solid var(--line);background:#0a1120;color:var(--text);font:inherit;font-size:.95rem;resize:vertical}
+#s-ugyfel textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,209,255,.18)}
+.docmodes{display:flex;flex-wrap:wrap;gap:4px 18px;margin:10px 0 0;padding:6px 12px 4px;border:1px solid var(--line);border-radius:var(--rs)}
+.docmodes legend{color:var(--muted);font-size:.8rem;padding:0 4px}
+.docbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.btn{min-height:46px;padding:0 20px;border-radius:var(--rs);font:inherit;font-weight:650;font-size:.95rem;cursor:pointer;border:1px solid var(--line2);background:transparent;color:var(--text)}
+.btn.primary{background:#be1d2f;border-color:#be1d2f;color:#fff}
+.btn.primary:hover{background:#d42438}
+.btn.ghost:hover{border-color:var(--text)}
+
+/* Előnézet */
+body.doc-open{overflow:hidden}
+#docWrap{position:fixed;inset:0;z-index:80;background:rgba(5,8,15,.86);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column}
+#docWrap[hidden]{display:none}
+.doc-bar{display:flex;align-items:center;gap:8px;padding:10px max(12px,env(safe-area-inset-left));padding-top:max(10px,env(safe-area-inset-top));border-bottom:1px solid var(--line);background:var(--bg)}
+.doc-bar span{flex:1}
+.doc-bar .btn{min-height:40px;padding:0 14px;font-size:.88rem}
+.doc-scroll{flex:1;overflow:auto;padding:18px 10px 40px;-webkit-overflow-scrolling:touch}
+#docSheet{max-width:820px;margin:0 auto}
+
+/* A kimutatás (képernyőn és nyomtatásban) */
+.doc{--r:#be1d2f;--g:#414143;--k:#111;--m:#6b6b70;--l:#e4e4e7;background:#fff;color:var(--k);font:13px/1.5 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;padding:34px 40px 26px;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.doc *{box-sizing:border-box}
+.doc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding-bottom:16px;border-bottom:3px solid var(--r)}
+.doc-head img{width:230px;max-width:48%;height:auto;display:block}
+.doc-title{text-align:right}
+.doc-title h1{margin:0;font-size:20px;letter-spacing:.04em;text-transform:uppercase;color:var(--g);font-weight:800}
+.doc-title p{margin:2px 0 0;color:var(--m);font-size:12px}
+.doc-title .doc-ref{color:var(--k);font-weight:650}
+.doc-who{display:flex;gap:28px;flex-wrap:wrap;margin-top:16px;padding:12px 14px;background:#f6f6f7;border-radius:6px}
+.doc-who span,.doc-grid span{display:block;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--m)}
+.doc-who b{font-size:14px}
+.doc h2{margin:20px 0 8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--r)}
+.doc-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--l);border-radius:6px;overflow:hidden}
+.doc-grid>div{padding:10px 12px;border-left:1px solid var(--l)}
+.doc-grid>div:first-child{border-left:0}
+.doc-grid b{display:block;font-size:16px;font-variant-numeric:tabular-nums}
+.doc-grid small{display:block;color:var(--m);font-size:10.5px;line-height:1.3;margin-top:2px}
+.doc-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.doc-tbl th{text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--g);padding:8px 10px;font-weight:650}
+.doc-tbl th:last-child,.doc-tbl td.num{text-align:right}
+.doc-tbl td{padding:10px;border-bottom:1px solid var(--l);vertical-align:top}
+.doc-tbl td.num{font-weight:800;font-size:15px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.doc-tbl tr.best td{background:#fbeef0}
+.doc-tbl tr.best td:first-child{box-shadow:inset 4px 0 0 var(--r)}
+.doc-tbl tr.best td.num{color:var(--r)}
+.doc-tbl em{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;background:var(--r);color:#fff;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.03em;vertical-align:1px}
+.doc-info ul{margin:16px 0 0;padding-left:18px;color:#333;font-size:12px}
+.doc-info li{margin:3px 0}
+.doc-info li.doc-note{color:var(--k);font-weight:600;white-space:pre-line}
+.doc-disc{margin:12px 0 0;color:var(--m);font-size:10.5px;line-height:1.45}
+.doc-foot{display:flex;justify-content:space-between;gap:12px;margin-top:22px;padding-top:10px;border-top:1px solid var(--l);font-size:11px;color:var(--g)}
+.doc-tag{font-weight:700;letter-spacing:.14em;color:var(--r)}
+@media (max-width:640px){
+  .grid.g2{grid-template-columns:1fr}
+  .doc{padding:20px 16px;font-size:12px}
+  .doc-head{flex-direction:column;align-items:flex-start}
+  .doc-head img{max-width:70%;width:210px}
+  .doc-title{text-align:left}
+  .doc-grid{grid-template-columns:1fr 1fr}
+  .doc-grid>div:nth-child(3){border-left:0}
+  .doc-grid>div:nth-child(n+3){border-top:1px solid var(--l)}
+  .doc-tbl thead{display:none}
+  .doc-tbl tr{display:grid;grid-template-columns:1fr auto;border-bottom:1px solid var(--l)}
+  .doc-tbl td{border:0;padding:6px 10px}
+  .doc-tbl td:nth-child(1){grid-column:1/-1;padding-top:10px}
+  .doc-tbl td:nth-child(2),.doc-tbl td:nth-child(3){grid-column:1;color:var(--m);font-size:11.5px;padding-top:0}
+  .doc-tbl td.num{grid-column:2;grid-row:2/4;align-self:center}
+  .doc-tbl tr.best{background:#fbeef0;box-shadow:inset 4px 0 0 var(--r)}
+  .doc-tbl tr.best td{background:none}
+  .doc-tbl tr.best td:first-child{box-shadow:none}
+}
+@page{size:A4;margin:14mm 14mm 12mm}
+@media print{
+  html,body{background:#fff!important}
+  body>*:not(#docWrap){display:none!important}
+  #docWrap,#docWrap[hidden]{display:block!important;position:static;background:none;backdrop-filter:none}
+  .doc-bar{display:none!important}
+  .doc-scroll{padding:0;overflow:visible}
+  #docSheet{max-width:none}
+  .doc{box-shadow:none;border-radius:0;padding:0;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-grid{grid-template-columns:repeat(4,1fr)!important}
+  .doc-tbl thead{display:table-header-group!important}
+  .doc-tbl tr{display:table-row!important}
+  .doc-tbl td{display:table-cell!important;border-bottom:1px solid #e4e4e7!important}
+}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode .bar i{transition:none}}
 </style>
 </head>
@@ -244,7 +336,7 @@ textarea#qText:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3p
     <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
   </div>
   <div class="wrap"><nav class="steps" aria-label="Lépések">
-    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-forras"><b>i</b>Források</a>
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-ugyfel"><b>5</b>Ügyfélnek</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-forras"><b>i</b>Források</a>
   </nav></div>
 </header>
 
@@ -364,6 +456,30 @@ textarea#qText:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3p
     <p class="src" id="routeNote"></p>
   </section>
 
+  <section class="card panel" id="s-ugyfel">
+    <div class="card-h"><span class="no">5</span><div><h2>Ügyfélnek: PDF / nyomtatás</h2><p>TZSVTAV-arculatú fuvarköltség-becslés, amit a LED-fal ajánlathoz csatolhatsz</p></div></div>
+    <div class="grid g2">
+      <label>Ügyfél neve<input id="docClient" type="text" autocomplete="off" placeholder="pl. Minta Rendezvény Kft."></label>
+      <label>Ajánlat / projekt hivatkozás<input id="docRef" type="text" autocomplete="off" placeholder="pl. Ajánlat 2026/118 · P3.9 kültéri fal"></label>
+    </div>
+    <div class="grid g4 docrow">
+      <label>Pénznem<select id="docCur"><option value="HUF">Ft</option><option value="EUR">€</option></select></label>
+      <label>Érvényesség<span class="unit"><input id="docValid" type="number" min="0" step="1" inputmode="numeric"><em>nap</em></span></label>
+      <label>Felár (nem látszik)<span class="unit"><input id="docMarkup" type="number" min="0" step="1" inputmode="decimal"><em>%</em></span></label>
+      <label class="chk"><input id="docRound" type="checkbox"> Kerekítés felfelé (1 000 Ft / 10 €)</label>
+    </div>
+    <fieldset class="docmodes"><legend>Fuvarmódok a kimutatásban</legend>
+      <label class="chk"><input id="docM-air" type="checkbox"> Légi</label>
+      <label class="chk"><input id="docM-sea" type="checkbox"> Tengeri</label>
+      <label class="chk"><input id="docM-rail" type="checkbox"> Vasúti</label>
+    </fieldset>
+    <label class="full">Az ár nem tartalmazza<input id="docExcl" type="text" autocomplete="off"></label>
+    <label class="full">Megjegyzés az ügyfélnek (nem kötelező)<textarea id="docNote" rows="2" placeholder="pl. A szállítás a gyártás befejezése után indul."></textarea></label>
+    <label class="full">Lábléc: elérhetőség<input id="docContact" type="text" autocomplete="off" placeholder="pl. név · telefon · e-mail · weboldal"></label>
+    <p class="src">A felár és a díjak forrása nem jelenik meg a kimutatáson. PDF: a nyomtatási ablakban válaszd a „Mentés PDF-ként” lehetőséget (telefonon: Megosztás → Nyomtatás).</p>
+    <div class="docbtns"><button type="button" class="btn ghost" id="docPreview">Előnézet</button><button type="button" class="btn primary" id="docPrint">PDF / Nyomtatás</button></div>
+  </section>
+
   <section class="card panel" id="s-szotar">
     <div class="card-h"><span class="no">?</span><div><h2>Ajánlatértelmező és fuvarszótár</h2><p>Illeszd be a szállítmányozó ajánlatát: soronként megmagyarázza, mi mit jelent, és mennyibe kerül összesen</p></div></div>
     <div class="qwrap">
@@ -392,6 +508,10 @@ textarea#qText:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3p
   <a href="#sea"><span>Tengeri</span><b id="dSea">–</b></a>
   <a href="#rail"><span>Vasúti</span><b id="dRail">–</b></a>
 </nav>
+<div id="docWrap" hidden>
+  <div class="doc-bar"><b>Előnézet</b><span></span><button type="button" class="btn primary" id="docPrint2">PDF / Nyomtatás</button><button type="button" class="btn ghost" id="docClose" aria-label="Bezárás">Bezárás</button></div>
+  <div class="doc-scroll"><div id="docSheet"></div></div>
+</div>
 <script type="module">
 // LED-fal súly- és fuvarszámítás – tiszta függvények, külső függőség nélkül.
 // Minden bemenet lehet null (hiányzó adat); ilyenkor az érintett eredmény is null.
@@ -1177,6 +1297,121 @@ const Q_EXAMPLE = 'Vasúti díj:\nEXW Shenzhen - CFS BUD:      460 USD .-       
   renderGloss(); renderQuote();
   window.__qRefresh = renderQuote;
   window.__gloss = { analyze, count: GLOSS.reduce((s, g) => s + g.items.length, 0) };
+})();
+
+// Ügyfélnek szóló fuvarköltség-kimutatás (nyomtatás / PDF)
+const LOGO = 'data:image/png;base64,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';
+const DOC_STORE = STORE + '.doc';
+const DOC_DEF = { client: '', ref: '', valid: 7, markup: 0, round: true, cur: 'HUF', modes: { air: true, sea: true, rail: true }, excl: 'vám, import-ÁFA, vámkezelés, belföldi kiszállítás, szállítmánybiztosítás', note: '', contact: '' };
+let DOC = (() => { try { return { ...DOC_DEF, ...JSON.parse(localStorage.getItem(DOC_STORE) || '{}') }; } catch (e) { return { ...DOC_DEF }; } })();
+const docSave = () => { try { localStorage.setItem(DOC_STORE, JSON.stringify(DOC)); } catch (e) { /* */ } };
+
+function docPrice(usd) {
+  if (usd === null || usd === undefined) return null;
+  let v = convert(usd, DOC.cur, D.fx) * (1 + (Number(DOC.markup) || 0) / 100);
+  if (DOC.round) { const step = DOC.cur === 'HUF' ? 1000 : 10; v = Math.ceil(v / step) * step; }
+  return v;
+}
+const docMoney = v => v === null ? '–' : new Intl.NumberFormat('hu-HU', { style: 'currency', currency: DOC.cur, maximumFractionDigits: 0 }).format(v);
+const hdate = d => d.toLocaleDateString('hu-HU', { year: 'numeric', month: 'long', day: 'numeric' });
+
+function buildDoc() {
+  const k = window.__ledfuvar; if (!k) return null;
+  const { res, air, sea, rail, qty } = k;
+  const cab = cabinet();
+  const today = new Date(); const until = new Date(today.getTime() + (Number(DOC.valid) || 0) * 864e5);
+  const seaC = D.containers.find(c => c.id === S.seaCont), railC = D.containers.find(c => c.id === S.railCont);
+  const rows = [
+    { key: 'air', name: 'Légi fuvar', t: D.transit.air?.text, basis: air.chg != null ? `díjköteles tömeg ${nf(air.chg, 1)} kg` : '', usd: air.cost },
+    { key: 'sea', name: sea.mode === 'lcl' ? 'Tengeri fuvar · gyűjtő (LCL)' : 'Tengeri fuvar · teljes konténer', t: D.transit.sea?.text, basis: sea.mode === 'lcl' ? (sea.rt != null ? `${nf(sea.rt, 2)} díjköteles egység (W/M)` : '') : (sea.n ? `${sea.n} × ${seaC.name}` : ''), usd: sea.cost },
+    { key: 'rail', name: rail.mode === 'lcl' ? 'Vasúti fuvar · gyűjtő (LCL)' : 'Vasúti fuvar · teljes konténer', t: D.transit.rail?.text, basis: rail.mode === 'lcl' ? (rail.chgM3 != null ? `${nf(rail.chgM3, 2)} m³ díjköteles térfogat` : '') : (rail.n ? `${rail.n} × ${railC.name}` : ''), usd: rail.cost },
+  ].filter(r => DOC.modes[r.key]).map(r => ({ ...r, price: docPrice(r.usd) }));
+  const known = rows.filter(r => r.price !== null);
+  const best = known.length > 1 ? Math.min(...known.map(r => r.price)) : null;
+
+  const d = el('article', 'doc');
+  // Fejléc
+  const head = el('header', 'doc-head');
+  const lg = el('img'); lg.src = LOGO; lg.alt = 'TZSVTAV – LED, Prolight, Sound';
+  const hr = el('div', 'doc-title');
+  hr.append(el('h1', '', 'Fuvarköltség-becslés'), el('p', '', hdate(today)));
+  if (DOC.ref) hr.append(el('p', 'doc-ref', DOC.ref));
+  head.append(lg, hr); d.append(head);
+
+  // Ügyfél
+  if (DOC.client || DOC.ref) {
+    const who = el('div', 'doc-who');
+    if (DOC.client) { const b = el('div'); b.append(el('span', '', 'Ügyfél'), el('b', '', DOC.client)); who.append(b); }
+    const v = el('div'); v.append(el('span', '', 'Érvényes'), el('b', '', (Number(DOC.valid) || 0) > 0 ? hdate(until).replace(/\.$/, '') + '-ig' : 'visszavonásig')); who.append(v);
+    d.append(who);
+  }
+
+  // Szállítmány
+  d.append(el('h2', '', 'A szállítmány'));
+  const wall = S.mode === 'wall' && val(S.wallW) && val(S.wallH) ? ` · ${nf(S.wallW, 2)} × ${nf(S.wallH, 2)} m fal` : '';
+  const grid = el('div', 'doc-grid');
+  const cell = (t, v, s) => { const c = el('div'); c.append(el('span', '', t), el('b', '', v)); if (s) c.append(el('small', '', s)); grid.append(c); };
+  cell('LED-fal', qty != null ? `${qty} db kabinet` : '–', `${cab.brand === 'Saját' ? 'egyedi kabinet' : cab.brand + ' ' + cab.name}${wall}`);
+  cell('Bruttó tömeg', res.gross != null ? `${nf(Math.ceil(res.gross), 0)} kg` : '–', 'csomagolással együtt');
+  cell('Térfogat', res.volume != null ? `${nf(res.volume, 2)} m³` : '–', 'csomagok külső mérete');
+  cell('Csomagok', res.count != null ? `${res.count} db` : '–', res.caseCount != null ? `ebből ${res.caseCount} LED-láda` : '');
+  d.append(grid);
+
+  // Fuvarmódok
+  d.append(el('h2', '', 'Becsült fuvarköltség'));
+  const tb = el('table', 'doc-tbl');
+  const th = el('thead'); const thr = el('tr'); ['Fuvarmód', 'Menetidő', 'Elszámolási alap', 'Becsült díj (nettó)'].forEach(t => thr.append(el('th', '', t))); th.append(thr); tb.append(th);
+  const tbody = el('tbody');
+  for (const r of rows) {
+    const tr = el('tr', r.price !== null && r.price === best ? 'best' : '');
+    const n = el('td'); n.append(el('b', '', r.name)); if (r.price !== null && r.price === best) n.append(el('em', '', 'Legkedvezőbb'));
+    tr.append(n, el('td', '', r.t || '–'), el('td', '', r.basis || '–'), el('td', 'num', r.price === null ? 'nem számolható' : docMoney(r.price)));
+    tbody.append(tr);
+  }
+  if (!rows.length) { const tr = el('tr'); const td = el('td', '', 'Nincs kiválasztott fuvarmód.'); td.colSpan = 4; tr.append(td); tbody.append(tr); }
+  tb.append(tbody); d.append(tb);
+
+  // Feltételek
+  const info = el('div', 'doc-info');
+  const ul = el('ul');
+  ul.append(el('li', '', 'Útvonal: Kína → Európa. A menetidő a tényleges indulástól számít, a gyártási és vámkezelési idő ezen felül értendő.'));
+  if (DOC.excl.trim()) ul.append(el('li', '', `Az ár nem tartalmazza: ${DOC.excl.trim()}.`));
+  ul.append(el('li', '', 'Az árak nettó árak, a mindenkori ÁFA-t nem tartalmazzák.'));
+  if (DOC.cur !== 'USD') ul.append(el('li', '', `Átváltás: EKB-árfolyam (${D.fx.date}), 1 € = ${nf(D.fx.eurHuf, 2)} Ft. Árfolyamváltozás esetén a díj módosulhat.`));
+  if (DOC.note.trim()) ul.append(el('li', 'doc-note', DOC.note.trim()));
+  info.append(ul); d.append(info);
+  d.append(el('p', 'doc-disc', 'A kimutatás tájékoztató jellegű becslés aktuális piaci fuvardíjak alapján, nem minősül ajánlati kötöttségnek. A végleges díjat a fuvarozó visszaigazolása, a tényleges csomagadatok és az indulás időpontjában érvényes pótdíjak határozzák meg.'));
+
+  const foot = el('footer', 'doc-foot');
+  foot.append(el('span', '', DOC.contact.trim() || 'TZSVTAV'), el('span', 'doc-tag', 'LED · PROLIGHT · SOUND'));
+  d.append(foot);
+  return d;
+}
+
+function renderDoc() { const host = $('docSheet'); if (!host) return; const d = buildDoc(); host.replaceChildren(...(d ? [d] : [])); }
+function openDoc(print) {
+  renderDoc(); $('docWrap').hidden = false; document.body.classList.add('doc-open');
+  if (print) setTimeout(() => window.print(), 150);
+}
+function closeDoc() { $('docWrap').hidden = true; document.body.classList.remove('doc-open'); }
+
+(function initDoc() {
+  if (!$('docClient')) return;
+  const bind = (id, key, num) => { const n = $(id); n.value = DOC[key] ?? ''; n.addEventListener('input', () => { DOC[key] = num ? (n.value === '' ? 0 : Number(n.value)) : n.value; docSave(); }); };
+  bind('docClient', 'client'); bind('docRef', 'ref'); bind('docValid', 'valid', true); bind('docMarkup', 'markup', true);
+  bind('docExcl', 'excl'); bind('docNote', 'note'); bind('docContact', 'contact');
+  const cur = $('docCur'); cur.value = DOC.cur; cur.addEventListener('change', () => { DOC.cur = cur.value; docSave(); });
+  const rd = $('docRound'); rd.checked = !!DOC.round; rd.addEventListener('change', () => { DOC.round = rd.checked; docSave(); });
+  for (const m of ['air', 'sea', 'rail']) { const c = $('docM-' + m); c.checked = DOC.modes[m] !== false; c.addEventListener('change', () => { DOC.modes[m] = c.checked; docSave(); }); }
+  $('docPreview').addEventListener('click', () => openDoc(false));
+  $('docPrint').addEventListener('click', () => openDoc(true));
+  $('docPrint2').addEventListener('click', () => window.print());
+  $('docClose').addEventListener('click', closeDoc);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('docWrap').hidden) closeDoc(); });
+  let oldTitle = null;
+  window.addEventListener('beforeprint', () => { renderDoc(); oldTitle = document.title; document.title = ['Fuvarköltség-becslés', DOC.client, DOC.ref].filter(Boolean).join(' – ').replace(/[\\/:*?"<>|]/g, '-'); });
+  window.addEventListener('afterprint', () => { if (oldTitle) document.title = oldTitle; });
+  window.__doc = { build: buildDoc, state: () => DOC, price: docPrice };
 })();
 </script>
 </body>

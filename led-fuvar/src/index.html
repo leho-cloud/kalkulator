@@ -15,7 +15,7 @@
     <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
   </div>
   <div class="wrap"><nav class="steps" aria-label="Lépések">
-    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-forras"><b>i</b>Források</a>
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-ugyfel"><b>5</b>Ügyfélnek</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-forras"><b>i</b>Források</a>
   </nav></div>
 </header>
 
@@ -135,6 +135,30 @@
     <p class="src" id="routeNote"></p>
   </section>
 
+  <section class="card panel" id="s-ugyfel">
+    <div class="card-h"><span class="no">5</span><div><h2>Ügyfélnek: PDF / nyomtatás</h2><p>TZSVTAV-arculatú fuvarköltség-becslés, amit a LED-fal ajánlathoz csatolhatsz</p></div></div>
+    <div class="grid g2">
+      <label>Ügyfél neve<input id="docClient" type="text" autocomplete="off" placeholder="pl. Minta Rendezvény Kft."></label>
+      <label>Ajánlat / projekt hivatkozás<input id="docRef" type="text" autocomplete="off" placeholder="pl. Ajánlat 2026/118 · P3.9 kültéri fal"></label>
+    </div>
+    <div class="grid g4 docrow">
+      <label>Pénznem<select id="docCur"><option value="HUF">Ft</option><option value="EUR">€</option></select></label>
+      <label>Érvényesség<span class="unit"><input id="docValid" type="number" min="0" step="1" inputmode="numeric"><em>nap</em></span></label>
+      <label>Felár (nem látszik)<span class="unit"><input id="docMarkup" type="number" min="0" step="1" inputmode="decimal"><em>%</em></span></label>
+      <label class="chk"><input id="docRound" type="checkbox"> Kerekítés felfelé (1 000 Ft / 10 €)</label>
+    </div>
+    <fieldset class="docmodes"><legend>Fuvarmódok a kimutatásban</legend>
+      <label class="chk"><input id="docM-air" type="checkbox"> Légi</label>
+      <label class="chk"><input id="docM-sea" type="checkbox"> Tengeri</label>
+      <label class="chk"><input id="docM-rail" type="checkbox"> Vasúti</label>
+    </fieldset>
+    <label class="full">Az ár nem tartalmazza<input id="docExcl" type="text" autocomplete="off"></label>
+    <label class="full">Megjegyzés az ügyfélnek (nem kötelező)<textarea id="docNote" rows="2" placeholder="pl. A szállítás a gyártás befejezése után indul."></textarea></label>
+    <label class="full">Lábléc: elérhetőség<input id="docContact" type="text" autocomplete="off" placeholder="pl. név · telefon · e-mail · weboldal"></label>
+    <p class="src">A felár és a díjak forrása nem jelenik meg a kimutatáson. PDF: a nyomtatási ablakban válaszd a „Mentés PDF-ként” lehetőséget (telefonon: Megosztás → Nyomtatás).</p>
+    <div class="docbtns"><button type="button" class="btn ghost" id="docPreview">Előnézet</button><button type="button" class="btn primary" id="docPrint">PDF / Nyomtatás</button></div>
+  </section>
+
   <section class="card panel" id="s-szotar">
     <div class="card-h"><span class="no">?</span><div><h2>Ajánlatértelmező és fuvarszótár</h2><p>Illeszd be a szállítmányozó ajánlatát: soronként megmagyarázza, mi mit jelent, és mennyibe kerül összesen</p></div></div>
     <div class="qwrap">
@@ -163,6 +187,10 @@
   <a href="#sea"><span>Tengeri</span><b id="dSea">–</b></a>
   <a href="#rail"><span>Vasúti</span><b id="dRail">–</b></a>
 </nav>
+<div id="docWrap" hidden>
+  <div class="doc-bar"><b>Előnézet</b><span></span><button type="button" class="btn primary" id="docPrint2">PDF / Nyomtatás</button><button type="button" class="btn ghost" id="docClose" aria-label="Bezárás">Bezárás</button></div>
+  <div class="doc-scroll"><div id="docSheet"></div></div>
+</div>
 <script type="module">/*__JS__*/</script>
 </body>
 </html>
