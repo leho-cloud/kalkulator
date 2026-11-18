@@ -28,7 +28,11 @@ function modeRows(res) {
     { key: 'air', name: 'Légi fuvar', t: door().air.total, leg: D.transit.air?.text, basis: air.chg != null ? `díjköteles tömeg ${nf(air.chg, 1)} kg` : '', usd: air.cost },
     { key: 'sea', name: sea.mode === 'lcl' ? 'Tengeri fuvar · gyűjtő (LCL)' : 'Tengeri fuvar · teljes konténer', t: door().sea.total, leg: 'ebből hajóút ' + (door().sea.steps[2]?.[1] || ''), basis: sea.mode === 'lcl' ? (sea.rt != null ? `${nf(sea.rt, 2)} díjköteles egység (W/M)` : '') : (sea.n ? `${sea.n} × ${seaC.name}` : ''), usd: sea.cost },
     { key: 'rail', name: rail.mode === 'lcl' ? 'Vasúti fuvar · gyűjtő (LCL)' : 'Vasúti fuvar · teljes konténer', t: door().rail.total, leg: 'ebből vasút ' + (door().rail.steps[2]?.[1] || ''), basis: rail.mode === 'lcl' ? (rail.chgM3 != null ? `${nf(rail.chgM3, 2)} m³ díjköteles térfogat` : '') : (rail.n ? `${rail.n} × ${railC.name}` : ''), usd: rail.cost },
-  ].filter(r => DOC.modes[r.key]).map(r => ({ ...r, price: docPrice(r.usd) }));
+  ].filter(r => DOC.modes[r.key]).map(r => {
+    let usd = r.usd;
+    if (usd != null && typeof exwOn === 'function' && exwOn()) { const k = r.key === 'air' ? [null, null] : r.key === 'sea' ? [sea.mode, sea.n] : [rail.mode, rail.n]; usd += exwCost(r.key, k[0], res, k[1]).mid; }
+    return { ...r, usd, price: docPrice(usd) };
+  });
 }
 function docContext() {
   const k = window.__ledfuvar; if (!k) return null;
@@ -36,8 +40,8 @@ function docContext() {
   const cab = cabinet();
   const wall = S.mode === 'wall' && val(S.wallW) && val(S.wallH) ? ` · ${nf(S.wallW, 2)} × ${nf(S.wallH, 2)} m fal` : '';
   const calcLed = { label: k.qty != null ? `${k.qty} db kabinet` : '–', sub: `${cab.brand === 'Saját' ? 'egyedi kabinet' : cab.brand + ' ' + cab.name}${wall}` };
-  if (ic) return { ...ic, led: ic.led || calcLed, rows: ic.rows.filter(r => r.key === 'other' || DOC.modes[r.key] !== false) };
-  return { res: k.res, rows: modeRows(k.res), extraExcl: [], led: calcLed };
+  if (ic) return { ...ic, led: ic.led || calcLed, rows: ic.rows.filter(r => r.key === 'other' || DOC.modes[r.key] !== false), exw: ic.calcRows && typeof exwOn === 'function' && exwOn() };
+  return { res: k.res, rows: modeRows(k.res), extraExcl: [], led: calcLed, exw: typeof exwOn === 'function' && exwOn() };
 }
 
 function buildDoc() {
@@ -112,6 +116,7 @@ function buildDoc() {
   // Feltételek
   const info = el('div', 'doc-info');
   const ul = el('ul');
+  if (ctx.exw) ul.append(el('li', '', 'Az ár tartalmazza a kínai felvétel, gyűjtőraktári kezelés, exportvámkezelés és helyi terminálköltség becsült összegét.'));
   ul.append(el('li', '', 'Útvonal: Kína (gyári felvétel) → Budapest. Az átfutás a kész, csomagolt áru átvételétől számít; a gyártási idő ezen felül értendő. Tipikus sáv, nem garantált határidő.'));
   const excl = exclList(ctx); if (excl) ul.append(el('li', '', `Az ár nem tartalmazza: ${excl}.`));
   ul.append(el('li', '', 'Az árak nettó árak, a mindenkori ÁFA-t nem tartalmazzák.'));

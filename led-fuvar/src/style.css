@@ -410,4 +410,17 @@ body.doc-open{overflow:hidden}
 .tr-links a{font-weight:650}
 @media (max-width:720px){.tr-kpis{grid-template-columns:1fr 1fr}.tr-map .cty{font-size:13px}.tr-map .stn-l{font-size:14px}}
 @media (prefers-reduced-motion:reduce){.tr-map .train .halo{animation:none}}
+/* EXW */
+.exw{margin-top:10px;padding:10px 12px;border-radius:var(--rs);background:#0a1120;border:1px solid var(--line);font-size:.82rem}
+.exw:empty{display:none}
+.exw .src{margin:0}
+.exw-h,.exw-t{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.exw-h span{color:var(--muted);font-weight:600}
+.exw-h b{color:var(--warn);white-space:nowrap}
+.exw ul{list-style:none;margin:6px 0;padding:0;display:grid;gap:3px}
+.exw li{display:flex;justify-content:space-between;gap:10px;color:var(--dim)}
+.exw li .num{white-space:nowrap;color:var(--muted)}
+.exw-t{padding-top:6px;border-top:1px dashed var(--line2)}
+.exw-t span{color:var(--muted)}
+.exw-t b{color:var(--c);font-size:.98rem;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode .bar i{transition:none}}

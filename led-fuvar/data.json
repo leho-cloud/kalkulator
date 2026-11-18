@@ -927,5 +927,90 @@
         ]
       }
     ]
+  },
+  "exwOrigin": {
+    "date": "2026-11-18",
+    "note": "EXW paritásnál a vevő fizeti a kínai felvételt, a gyűjtőraktári kezelést, az exportvámot és a helyi terminálköltséget. Tipikus nyilvános sávok, nem ajánlat.",
+    "lcl": {
+      "pickup": [
+        100,
+        400
+      ],
+      "cfsPerM3": [
+        15,
+        35
+      ],
+      "cfsMin": 50,
+      "thcPerM3": [
+        20,
+        40
+      ],
+      "customs": [
+        50,
+        150
+      ],
+      "docs": [
+        35,
+        75
+      ]
+    },
+    "fcl": {
+      "truck": [
+        50,
+        480
+      ],
+      "thc": [
+        120,
+        250
+      ],
+      "customs": [
+        100,
+        300
+      ],
+      "docs": [
+        35,
+        75
+      ]
+    },
+    "air": {
+      "pickup": [
+        100,
+        400
+      ],
+      "customs": [
+        50,
+        150
+      ],
+      "docs": [
+        35,
+        75
+      ]
+    },
+    "sources": [
+      {
+        "label": "Suaid Global: LCL díjak – gyűjtőraktári kezelés 15–35 USD/m³ (min. 50–150), felvétel 100–400 USD",
+        "url": "https://suaidglobal.com/insights/lcl-charges-fees-explained/"
+      },
+      {
+        "label": "Suaid Global: LCL költség – okmány/B/L 35–75 USD",
+        "url": "https://suaidglobal.com/insights/lcl-sea-freight-cost/"
+      },
+      {
+        "label": "SINO Shipping: kínai helyi kikötői díjak – LCL THC 20–40 USD/m³, 20' THC 120–250 USD",
+        "url": "https://www.sino-shipping.com/sv/fraktkostnader-fran-kina/dolda-avgifter/lokala-hamnavgifter-i-kina-shanghai-ningbo-shenzhen/"
+      },
+      {
+        "label": "SINO Shipping: exportvám 100–300 USD, kikötőbe szállítás 50–480 USD (FCL)",
+        "url": "https://www.sino-shipping.com/shipping-tax-import-china/"
+      },
+      {
+        "label": "Epic Sourcing: kínai exportvámkezelés 50–120 USD",
+        "url": "https://www.epicsourcing.co/epic-guide/shipping-from-china-guide"
+      },
+      {
+        "label": "Goodhope Freight: EXW-nél a vevő fizeti a raktári átvételt, az exportnyilatkozatot és a helyi kezelést",
+        "url": "https://goodhopefreight.com/info/logistics-knowledge/sea-freight/who-pay-lcl-local-charges.html"
+      }
+    ]
   }
 }

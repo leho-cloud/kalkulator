@@ -352,6 +352,7 @@ function update() {
 
   window.__ledfuvar = { res, air, sea, rail, qty };
   window.__qRefresh?.();
+  window.__exwRefresh?.();
   save();
 }
 
@@ -379,6 +380,8 @@ function sourcesList() {
   Object.values(D.rates).forEach(r => r && r.url && add(`${r.label} – ${r.source}`, r.url));
   add(D.rules.airSource, D.rules.airUrl); add(D.rules.seaSource, D.rules.seaUrl); add(D.rules.railSource, D.rules.railUrl);
   Object.values(D.transit).forEach(t => add(`Menetidő ${t.text} – ${t.source}`, t.url));
+  (D.doorTransit?.sources || []).forEach(s => add(`Átfutás – ${s.label}`, s.url));
+  (D.exwOrigin?.sources || []).forEach(s => add(`EXW kínai költség – ${s.label}`, s.url));
   add(`Árfolyam – ${D.fx.source} (${D.fx.date})`, D.fx.url);
   $('sources').replaceChildren(...[...seen].map(([u, l]) => { const li = el('li'); const a = el('a', null, l); a.href = u; a.target = '_blank'; a.rel = 'noopener'; li.append(a); return li; }));
   $('srcMeta').textContent = `Adatok frissítve: ${D.meta.updated} · ${D.meta.note}`;

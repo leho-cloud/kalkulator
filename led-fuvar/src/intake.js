@@ -198,9 +198,10 @@ function intakeContext() {
       return { key, name: MODE_NAME[key] + (/lcl|gyűjt|cfs/i.test(r.line + r.ctx) || unit === 'm3' ? ' · gyűjtő (LCL)' : '') + (r.via ? ` · via ${r.via}` : ''), t: dt?.total || '–', leg: dt && key !== 'air' ? 'ebből ' + (key === 'rail' ? 'vasút ' : 'hajóút ') + (dt.steps[2]?.[1] || '') : '', basis, usd, price: docPrice(usd) };
     });
   } else rows = modeRows(res);
+  const calcRows = !freight.length;
   const ex = p.quotes.filter(r => r.type === 'excluded').map(r => r.line.replace(/^\+\s*/, '').trim());
   const desc = (INTAKE.man.desc || '').trim();
-  return { res, rows, extraExcl: ex, led: hasShip ? { label: T.count != null ? `${T.count} csomag` : 'Szállítmány', sub: desc || 'csomaglista alapján' } : null };
+  return { res, rows, calcRows, extraExcl: ex, led: hasShip ? { label: T.count != null ? `${T.count} csomag` : 'Szállítmány', sub: desc || 'csomaglista alapján' } : null };
 }
 
 // ---- Felület ----

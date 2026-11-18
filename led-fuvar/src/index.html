@@ -75,6 +75,7 @@
   <section class="card panel" id="s-fuvar">
     <div class="card-h"><span class="no">4</span><div><h2>Fuvar</h2><p>Kína → Észak-Európa piaci referencia, saját ajánlattal felülírható</p></div></div>
     <div class="fx">
+      <label style="width:auto">Paritás (Kína)<span class="seg" role="group" aria-label="Paritás"><button type="button" data-exw="exw" aria-pressed="true">EXW</button><button type="button" data-exw="fob" aria-pressed="false">FOB / FCA</button></span></label>
       <label style="width:auto">Pénznem<span class="seg" role="group" aria-label="Pénznem"><button type="button" data-cur="HUF" aria-pressed="false">HUF</button><button type="button" data-cur="EUR" aria-pressed="false">EUR</button><button type="button" data-cur="USD" aria-pressed="true">USD</button></span></label>
       <span class="fxnote" id="fxNote"></span>
     </div>
@@ -90,6 +91,7 @@
         <p class="ratebadge" id="airRateSrc"></p>
         <ol class="steps-out" id="airSteps"></ol>
         <div class="total"><span>Becsült légi fuvardíj</span><div><b id="airTotal">–</b><small id="airTotalAlt"></small></div></div>
+        <div class="exw" id="airExw"></div>
       </article>
 
       <article class="fcard" id="sea" style="--c:var(--sea)">
@@ -110,6 +112,7 @@
         <p class="ratebadge" id="seaRateSrc"></p>
         <ol class="steps-out" id="seaSteps"></ol>
         <div class="total"><span>Becsült tengeri fuvardíj</span><div><b id="seaTotal">–</b><small id="seaTotalAlt"></small></div></div>
+        <div class="exw" id="seaExw"></div>
       </article>
 
       <article class="fcard" id="rail" style="--c:var(--rail)">
@@ -130,6 +133,7 @@
         <p class="ratebadge" id="railRateSrc"></p>
         <ol class="steps-out" id="railSteps"></ol>
         <div class="total"><span>Becsült vasúti fuvardíj</span><div><b id="railTotal">–</b><small id="railTotalAlt"></small></div></div>
+        <div class="exw" id="railExw"></div>
       </article>
     </div>
     <p class="src" id="routeNote"></p>
