@@ -279,6 +279,19 @@ body.doc-open{overflow:hidden}
 .doc-tbl tr.best td:first-child{box-shadow:inset 4px 0 0 var(--r)}
 .doc-tbl tr.best td.num{color:var(--r)}
 .doc-tbl em{display:inline-block;margin-left:8px;padding:1px 7px;border-radius:999px;background:var(--r);color:#fff;font-style:normal;font-size:10px;font-weight:700;letter-spacing:.03em;vertical-align:1px}
+.doc-tbl th:nth-child(2),.doc-tbl td:nth-child(2){width:26%}
+.doc-tbl td small{display:block;color:var(--m);font-size:10.5px;font-weight:400}
+.doc-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.doc-step{border:1px solid var(--l);border-radius:6px;padding:10px 12px;break-inside:avoid}
+.doc-step-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;border-bottom:2px solid var(--g);padding-bottom:5px;margin-bottom:6px}
+.doc-step-h b{font-size:12.5px}
+.doc-step-h span{font-weight:800;color:var(--r);white-space:nowrap}
+.doc-step ol{list-style:none;margin:0;padding:0;font-size:11px}
+.doc-step li{display:flex;justify-content:space-between;gap:8px;padding:2px 0;border-bottom:1px dotted var(--l)}
+.doc-step li span{color:#333}
+.doc-step li b{white-space:nowrap;font-weight:650}
+.doc-step p{margin:6px 0 0;font-size:10.5px;color:var(--m);line-height:1.4}
+.doc-step p.risk{color:#7a1220}
 .doc-info ul{margin:16px 0 0;padding-left:18px;color:#333;font-size:12px}
 .doc-info li{margin:3px 0}
 .doc-info li.doc-note{color:var(--k);font-weight:600;white-space:pre-line}
@@ -304,15 +317,28 @@ body.doc-open{overflow:hidden}
   .doc-tbl tr.best td{background:none}
   .doc-tbl tr.best td:first-child{box-shadow:none}
 }
-@page{size:A4;margin:14mm 14mm 12mm}
+@page{size:A4;margin:15mm 20mm 13mm}
 @media print{
-  html,body{background:#fff!important}
+  :root,html,body{color-scheme:light!important;background:#fff!important}
+  .doc h2{margin:14px 0 6px}
+  .doc-head{padding-bottom:12px}
+  .doc-head img{width:200px}
+  .doc-who{margin-top:12px;padding:9px 12px}
+  .doc-grid>div{padding:8px 10px}
+  .doc-tbl td{padding:7px 9px}
+  .doc-tbl th{padding:6px 9px}
+  .doc-step{padding:8px 10px}
+  .doc-info ul{margin-top:12px;font-size:11px}
+  .doc-foot{margin-top:14px}
   body>*:not(#docWrap){display:none!important}
   #docWrap,#docWrap[hidden]{display:block!important;position:static;background:none;backdrop-filter:none}
   .doc-bar{display:none!important}
   .doc-scroll{padding:0;overflow:visible}
   #docSheet{max-width:none}
-  .doc{box-shadow:none;border-radius:0;padding:0;font-size:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-step ol{font-size:10.5px}
+  .doc-step p{font-size:10px;margin-top:4px}
+  .doc-tbl td.num{font-size:14px}
+  .doc{box-shadow:none;border-radius:0;padding:0;font-size:11.5px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .doc-grid{grid-template-columns:repeat(4,1fr)!important}
   .doc-tbl thead{display:table-header-group!important}
   .doc-tbl tr{display:table-row!important}

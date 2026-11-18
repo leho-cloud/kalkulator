@@ -1,7 +1,9 @@
 // Ügyfélnek szóló fuvarköltség-kimutatás (nyomtatás / PDF)
 const LOGO = '__LOGO__';
 const DOC_STORE = STORE + '.doc';
-const DOC_DEF = { client: '', ref: '', valid: 7, markup: 0, round: true, cur: 'HUF', modes: { air: true, sea: true, rail: true }, excl: 'vám, import-ÁFA, vámkezelés, belföldi kiszállítás, szállítmánybiztosítás', note: '', contact: '' };
+const DOOR_FALLBACK = __DOOR__;
+const door = () => D.doorTransit || DOOR_FALLBACK;
+const DOC_DEF = { detail: true,  client: '', ref: '', valid: 7, markup: 0, round: true, cur: 'HUF', modes: { air: true, sea: true, rail: true }, excl: 'vám, import-ÁFA, vámkezelés, belföldi kiszállítás, szállítmánybiztosítás', note: '', contact: '' };
 let DOC = (() => { try { return { ...DOC_DEF, ...JSON.parse(localStorage.getItem(DOC_STORE) || '{}') }; } catch (e) { return { ...DOC_DEF }; } })();
 const docSave = () => { try { localStorage.setItem(DOC_STORE, JSON.stringify(DOC)); } catch (e) { /* */ } };
 
@@ -21,9 +23,9 @@ function buildDoc() {
   const today = new Date(); const until = new Date(today.getTime() + (Number(DOC.valid) || 0) * 864e5);
   const seaC = D.containers.find(c => c.id === S.seaCont), railC = D.containers.find(c => c.id === S.railCont);
   const rows = [
-    { key: 'air', name: 'Légi fuvar', t: D.transit.air?.text, basis: air.chg != null ? `díjköteles tömeg ${nf(air.chg, 1)} kg` : '', usd: air.cost },
-    { key: 'sea', name: sea.mode === 'lcl' ? 'Tengeri fuvar · gyűjtő (LCL)' : 'Tengeri fuvar · teljes konténer', t: D.transit.sea?.text, basis: sea.mode === 'lcl' ? (sea.rt != null ? `${nf(sea.rt, 2)} díjköteles egység (W/M)` : '') : (sea.n ? `${sea.n} × ${seaC.name}` : ''), usd: sea.cost },
-    { key: 'rail', name: rail.mode === 'lcl' ? 'Vasúti fuvar · gyűjtő (LCL)' : 'Vasúti fuvar · teljes konténer', t: D.transit.rail?.text, basis: rail.mode === 'lcl' ? (rail.chgM3 != null ? `${nf(rail.chgM3, 2)} m³ díjköteles térfogat` : '') : (rail.n ? `${rail.n} × ${railC.name}` : ''), usd: rail.cost },
+    { key: 'air', name: 'Légi fuvar', t: door().air.total, leg: D.transit.air?.text, basis: air.chg != null ? `díjköteles tömeg ${nf(air.chg, 1)} kg` : '', usd: air.cost },
+    { key: 'sea', name: sea.mode === 'lcl' ? 'Tengeri fuvar · gyűjtő (LCL)' : 'Tengeri fuvar · teljes konténer', t: door().sea.total, leg: 'ebből hajóút ' + (door().sea.steps[2]?.[1] || ''), basis: sea.mode === 'lcl' ? (sea.rt != null ? `${nf(sea.rt, 2)} díjköteles egység (W/M)` : '') : (sea.n ? `${sea.n} × ${seaC.name}` : ''), usd: sea.cost },
+    { key: 'rail', name: rail.mode === 'lcl' ? 'Vasúti fuvar · gyűjtő (LCL)' : 'Vasúti fuvar · teljes konténer', t: door().rail.total, leg: 'ebből vasút ' + (door().rail.steps[2]?.[1] || ''), basis: rail.mode === 'lcl' ? (rail.chgM3 != null ? `${nf(rail.chgM3, 2)} m³ díjköteles térfogat` : '') : (rail.n ? `${rail.n} × ${railC.name}` : ''), usd: rail.cost },
   ].filter(r => DOC.modes[r.key]).map(r => ({ ...r, price: docPrice(r.usd) }));
   const known = rows.filter(r => r.price !== null);
   const best = known.length > 1 ? Math.min(...known.map(r => r.price)) : null;
@@ -59,21 +61,41 @@ function buildDoc() {
   // Fuvarmódok
   d.append(el('h2', '', 'Becsült fuvarköltség'));
   const tb = el('table', 'doc-tbl');
-  const th = el('thead'); const thr = el('tr'); ['Fuvarmód', 'Menetidő', 'Elszámolási alap', 'Becsült díj (nettó)'].forEach(t => thr.append(el('th', '', t))); th.append(thr); tb.append(th);
+  const th = el('thead'); const thr = el('tr'); ['Fuvarmód', 'Átfutás (háztól házig)', 'Elszámolási alap', 'Becsült díj (nettó)'].forEach(t => thr.append(el('th', '', t))); th.append(thr); tb.append(th);
   const tbody = el('tbody');
   for (const r of rows) {
     const tr = el('tr', r.price !== null && r.price === best ? 'best' : '');
     const n = el('td'); n.append(el('b', '', r.name)); if (r.price !== null && r.price === best) n.append(el('em', '', 'Legkedvezőbb'));
-    tr.append(n, el('td', '', r.t || '–'), el('td', '', r.basis || '–'), el('td', 'num', r.price === null ? 'nem számolható' : docMoney(r.price)));
+    const tt = el('td'); tt.append(el('b', '', r.t || '–')); if (r.key !== 'air' && r.leg) tt.append(el('small', '', r.leg));
+    tr.append(n, tt, el('td', '', r.basis || '–'), el('td', 'num', r.price === null ? 'nem számolható' : docMoney(r.price)));
     tbody.append(tr);
   }
   if (!rows.length) { const tr = el('tr'); const td = el('td', '', 'Nincs kiválasztott fuvarmód.'); td.colSpan = 4; tr.append(td); tbody.append(tr); }
   tb.append(tbody); d.append(tb);
 
+  // Átfutás részletezése
+  const dt = door();
+  if (DOC.detail && rows.some(r => r.key !== 'air' || rows.length === 1)) {
+    d.append(el('h2', '', 'Átfutási idő részletezése'));
+    const wrap = el('div', 'doc-steps');
+    for (const r of rows) {
+      const m = dt[r.key]; if (!m) continue;
+      const box = el('div', 'doc-step');
+      const h = el('div', 'doc-step-h'); h.append(el('b', '', r.name.split(' · ')[0]), el('span', '', m.total)); box.append(h);
+      const ol = el('ol');
+      for (const [a, b] of m.steps) { const li = el('li'); li.append(el('span', '', a), el('b', '', b)); ol.append(li); }
+      box.append(ol);
+      if (m.freq) box.append(el('p', '', m.freq));
+      if (m.risk) box.append(el('p', 'risk', m.risk));
+      wrap.append(box);
+    }
+    d.append(wrap);
+  }
+
   // Feltételek
   const info = el('div', 'doc-info');
   const ul = el('ul');
-  ul.append(el('li', '', 'Útvonal: Kína → Európa. A menetidő a tényleges indulástól számít, a gyártási és vámkezelési idő ezen felül értendő.'));
+  ul.append(el('li', '', 'Útvonal: Kína (gyári felvétel) → Budapest. Az átfutás a kész, csomagolt áru átvételétől számít; a gyártási idő ezen felül értendő. Tipikus sáv, nem garantált határidő.'));
   if (DOC.excl.trim()) ul.append(el('li', '', `Az ár nem tartalmazza: ${DOC.excl.trim()}.`));
   ul.append(el('li', '', 'Az árak nettó árak, a mindenkori ÁFA-t nem tartalmazzák.'));
   if (DOC.cur !== 'USD') ul.append(el('li', '', `Átváltás: EKB-árfolyam (${D.fx.date}), 1 € = ${nf(D.fx.eurHuf, 2)} Ft. Árfolyamváltozás esetén a díj módosulhat.`));
@@ -100,6 +122,7 @@ function closeDoc() { $('docWrap').hidden = true; document.body.classList.remove
   bind('docClient', 'client'); bind('docRef', 'ref'); bind('docValid', 'valid', true); bind('docMarkup', 'markup', true);
   bind('docExcl', 'excl'); bind('docNote', 'note'); bind('docContact', 'contact');
   const cur = $('docCur'); cur.value = DOC.cur; cur.addEventListener('change', () => { DOC.cur = cur.value; docSave(); });
+  const dtl = $('docDetail'); dtl.checked = DOC.detail !== false; dtl.addEventListener('change', () => { DOC.detail = dtl.checked; docSave(); });
   const rd = $('docRound'); rd.checked = !!DOC.round; rd.addEventListener('change', () => { DOC.round = rd.checked; docSave(); });
   for (const m of ['air', 'sea', 'rail']) { const c = $('docM-' + m); c.checked = DOC.modes[m] !== false; c.addEventListener('change', () => { DOC.modes[m] = c.checked; docSave(); }); }
   $('docPreview').addEventListener('click', () => openDoc(false));
