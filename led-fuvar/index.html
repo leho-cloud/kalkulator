@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080c16">
+<title>LED-fal súly- és fuvarkalkulátor | TZSVTAV</title>
+<meta name="description" content="LED-fal súly-, térfogat- és fuvarköltség-becslés légi, tengeri és vasúti szállításhoz, nyilvános adatokból.">
+<style>:root{
+  color-scheme:dark;
+  --bg:#080c16;--bg2:#0c1222;--card:#111a2e;--card2:#0d1527;--line:#1f2b45;--line2:#2b3a5c;
+  --text:#eef3ff;--muted:#9aa8c4;--dim:#6f7d9b;
+  --accent:#4fd1ff;--accent2:#7c8cff;--ok:#5fe3a8;--warn:#ffcc66;--warnbg:#2a2312;--bad:#ff7b8a;
+  --air:#7c8cff;--sea:#4fd1ff;--rail:#5fe3a8;
+  --r:14px;--rs:10px;--h:44px;
+  --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 10px 30px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#16224a 0,transparent 60%),radial-gradient(900px 500px at -10% 10%,#0f2a3a 0,transparent 55%),var(--bg);color:var(--text);font:15px/1.5 "Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+a{color:var(--accent);text-underline-offset:3px}
+.wrap{width:min(1180px,100% - 28px);margin:0 auto}
+.num{font-variant-numeric:tabular-nums}
+
+/* Fejléc */
+header.top{position:sticky;top:0;z-index:30;background:rgba(8,12,22,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:56px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em}
+.brand i{width:26px;height:26px;border-radius:8px;background:conic-gradient(from 210deg,var(--accent),var(--accent2),var(--ok),var(--accent));box-shadow:0 0 18px rgba(79,209,255,.35)}
+.brand small{font-weight:600;letter-spacing:0;color:var(--muted);font-size:.85rem}
+.status{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 10px;background:var(--card2);white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+.dot.live{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+nav.steps{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:0 0 10px}
+nav.steps::-webkit-scrollbar{display:none}
+nav.steps a{flex:none;display:flex;align-items:center;gap:7px;padding:7px 12px;border:1px solid var(--line);border-radius:999px;color:var(--text);text-decoration:none;font-size:.85rem;background:var(--card2)}
+nav.steps a b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line);font-size:.72rem}
+nav.steps a:hover{border-color:var(--line2)}
+
+/* Összesítő */
+.hero{padding:22px 0 8px}
+.hero h1{font-size:clamp(26px,4.6vw,42px);line-height:1.08;letter-spacing:-.03em;margin:0 0 6px}
+.hero p{margin:0;color:var(--muted);max-width:760px}
+.summary{display:grid;grid-template-columns:1.1fr 1.9fr;gap:12px;margin:16px 0}
+.panel{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border-radius:var(--r);overflow:hidden;border:1px solid var(--line)}
+.kpi{background:var(--card);padding:14px 16px;min-width:0}
+.kpi dt{color:var(--muted);font-size:.78rem}
+.kpi dd{margin:2px 0 0;font-size:clamp(20px,2.6vw,28px);font-weight:750;letter-spacing:-.02em}
+.kpi.big dd{color:var(--accent)}
+.kpi .sub{display:block;color:var(--dim);font-size:.74rem;font-weight:500;letter-spacing:0;margin-top:2px}
+.kpi.na dd{color:var(--warn);font-size:1rem;padding-top:6px}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mode{position:relative;padding:14px;border-radius:var(--r);border:1px solid var(--line);background:var(--card);overflow:hidden;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.mode::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+.mode .lbl{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.8rem}
+.mode .val{font-size:clamp(20px,2.4vw,26px);font-weight:780;margin:6px 0 2px;letter-spacing:-.02em}
+.mode .meta{color:var(--dim);font-size:.75rem}
+.mode .bar{height:6px;border-radius:6px;background:var(--line);margin-top:10px;overflow:hidden}
+.mode .bar i{display:block;height:100%;background:var(--c);border-radius:6px;transition:width .3s}
+.mode.best{border-color:color-mix(in srgb,var(--c) 55%,var(--line))}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;font-size:.7rem;font-weight:650;background:var(--line);color:var(--text)}
+.badge.best{background:color-mix(in srgb,var(--ok) 22%,transparent);color:var(--ok)}
+.mode .na{color:var(--warn);font-size:.95rem;font-weight:600}
+
+.warn{display:none;margin:0 0 12px;padding:11px 14px;border-radius:var(--rs);border:1px solid #5d4a1d;background:var(--warnbg);color:var(--warn);font-size:.88rem}
+.warn.show{display:block}
+.warn ul{margin:0;padding-left:18px}
+
+/* Szekciók */
+section.card,.fcard{scroll-margin-top:118px}
+section.card{margin:14px 0;padding:18px}
+.card-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.card-h .no{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--accent2),var(--accent));color:#06101f;font-weight:800;flex:none}
+.card-h h2{margin:0;font-size:1.12rem;letter-spacing:-.01em}
+.card-h p{margin:0;color:var(--muted);font-size:.83rem}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.c2{grid-column:span 2}.c4{grid-column:1/-1}
+label{display:grid;grid-template-rows:1fr auto;align-items:end;gap:5px;color:var(--muted);font-size:.8rem;min-width:0}
+input,select{width:100%;min-width:0;height:var(--h);padding:0 12px;border-radius:var(--rs);border:1px solid var(--line);background:#0a1120;color:var(--text);font:inherit;font-size:.95rem}
+input[type=number]{-moz-appearance:textfield;appearance:textfield;font-variant-numeric:tabular-nums}
+input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+select{appearance:none;-webkit-appearance:none;padding-right:34px;text-overflow:ellipsis;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 52%,calc(100% - 12px) 52%;background-size:5px 5px;background-repeat:no-repeat}
+input:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,209,255,.18)}
+input.missing{border-color:#7a6224;background:#1d1a10}
+input.missing::placeholder{color:var(--warn)}
+.unit{position:relative}
+.unit input{padding-right:52px}
+.unit em{position:absolute;right:12px;bottom:0;height:var(--h);display:flex;align-items:center;font-style:normal;color:var(--dim);font-size:.8rem;pointer-events:none}
+.src{margin:10px 0 0;color:var(--dim);font-size:.78rem}
+.src.warnc{color:var(--warn)}
+.src a{color:var(--muted)}
+.seg{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:12px;background:#0a1120;gap:3px}
+.seg button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:.85rem;padding:8px 12px;border-radius:9px;cursor:pointer;min-height:36px}
+.seg button[aria-pressed=true]{background:var(--line2);color:var(--text)}
+.info{margin-top:10px;padding:10px 12px;border-radius:var(--rs);background:#0a1120;border:1px dashed var(--line2);color:var(--muted);font-size:.83rem}
+.info b{color:var(--text)}
+
+.rows{display:grid;gap:8px;margin-top:4px}
+.row{display:grid;grid-template-columns:minmax(0,2.3fr) minmax(0,.9fr) minmax(0,.9fr) minmax(0,.8fr) 44px;gap:8px;align-items:end;padding:10px;border:1px solid var(--line);border-radius:12px;background:#0b1323}
+.row .tot{height:var(--h);display:flex;align-items:center;justify-content:flex-end;font-weight:650;font-size:.9rem}
+.row .name{grid-column:1/-1}
+.row .src{grid-column:1/-1;margin:0}
+.row.pack{grid-template-columns:minmax(0,2.2fr) repeat(3,minmax(0,.8fr)) 44px}
+.row.pack .dims{grid-column:1/-2;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.del{height:var(--h);border-radius:var(--rs);border:1px solid #4a2b37;background:#22141c;color:#ffb3bf;font-size:20px;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chip{border:1px dashed var(--line2);background:transparent;color:var(--text);border-radius:999px;padding:8px 12px;font:inherit;font-size:.82rem;cursor:pointer;min-height:38px}
+.chip:hover{border-style:solid;border-color:var(--accent)}
+.subt{margin:16px 0 8px;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+/* Fuvar */
+.fx{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+.fxnote{color:var(--dim);font-size:.78rem}
+.freight{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.fcard{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:#0b1323;position:relative;overflow:hidden}
+.fcard::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:var(--c)}
+.fcard h3{margin:0;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:1rem}
+.fcard h3 span{color:var(--muted);font-weight:500;font-size:.78rem}
+.fcard .grid{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:12px}
+.ratebadge{display:block;margin:10px 0 0;color:var(--dim);font-size:.72rem;line-height:1.35}
+.ratebadge a{color:var(--muted)}
+.steps-out{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:6px;counter-reset:s}
+.steps-out li{position:relative;padding:8px 10px 8px 34px;border-radius:9px;background:#0a1120;border:1px solid var(--line);font-size:.83rem;color:var(--muted);counter-increment:s}
+.steps-out li::before{content:counter(s);position:absolute;left:9px;top:8px;width:17px;height:17px;border-radius:50%;background:var(--line2);color:var(--text);font-size:.68rem;display:grid;place-items:center;font-weight:700}
+.steps-out li b{color:var(--text);font-weight:650}
+.total{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line2)}
+.total span{color:var(--muted);font-size:.85rem}
+.total b{font-size:1.35rem;color:var(--c);letter-spacing:-.02em}
+.total b.na{color:var(--warn);font-size:.9rem;font-weight:600;text-align:right}
+.total small{display:block;text-align:right;color:var(--dim);font-size:.74rem;font-weight:500}
+
+/* Források */
+.sources{columns:2;column-gap:24px;margin:0;padding-left:18px;color:var(--muted);font-size:.83rem}
+.sources li{break-inside:avoid;margin:0 0 6px}
+footer{margin:18px 0 40px;color:var(--dim);font-size:.78rem}
+
+/* Alsó dokk mobilon */
+.dock{display:none}
+[hidden]{display:none!important}
+
+@media (max-width:980px){
+  .summary{grid-template-columns:1fr}
+  .freight{grid-template-columns:1fr}
+}
+@media (max-width:720px){
+  :root{--h:46px}
+  .wrap{width:min(100% - 20px,1180px)}
+  .brand small{display:none}
+  .hero{padding:14px 0 4px}
+  .hero p{font-size:.88rem}
+  .modes{grid-template-columns:1fr}
+  .mode{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:10px;padding:12px 14px}
+  .mode .lbl{grid-column:1}
+  .mode .val{grid-column:2;grid-row:1/3;margin:0;font-size:1.25rem;text-align:right}
+  .mode .meta{grid-column:1}
+  .mode .bar{grid-column:1/-1}
+  .kpi{padding:11px 12px}
+  .kpi dd{font-size:1.3rem}
+  section.card{padding:14px;margin:12px 0}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .c2{grid-column:1/-1}
+  input,select{font-size:16px}
+  .row{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 46px}
+  .row .q,.row .k{grid-column:span 1}
+  .row .tot{grid-column:1/-2;justify-content:flex-start;height:auto;color:var(--muted)}
+  .row .del{grid-column:3;grid-row:2}
+  .row.pack{grid-template-columns:repeat(3,minmax(0,1fr)) 46px}
+  .row.pack .name{grid-column:1/-1}
+  .row.pack .dims{grid-column:1/-1}
+  .row.pack .del{grid-column:4;grid-row:2}
+  .sources{columns:1}
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  .dock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(8,12,22,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+  .dock a{display:grid;text-align:center;text-decoration:none;color:var(--text);min-width:0}
+  .dock span{font-size:.66rem;color:var(--muted)}
+  .dock b{font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+  .dock a:nth-child(1) b{color:var(--accent)}
+  .dock a:nth-child(2) b{color:var(--air)}
+  .dock a:nth-child(3) b{color:var(--sea)}
+  .dock a:nth-child(4) b{color:var(--rail)}
+  .dock.alert{box-shadow:0 -2px 0 #7a6224 inset}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode .bar i{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><i aria-hidden="true"></i>TZSVTAV <small>LED-fal fuvarkalkulátor</small></div>
+    <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
+  </div>
+  <div class="wrap"><nav class="steps" aria-label="Lépések">
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-forras"><b>i</b>Források</a>
+  </nav></div>
+</header>
+
+<main class="wrap">
+  <section class="hero" id="s-top">
+    <h1>LED-fal súly és fuvarköltség</h1>
+    <p>Válassz kabinetet, add hozzá a tartozékokat és a ládákat. A kalkulátor kiszámolja a bruttó tömeget, a térfogatot és a légi, tengeri, illetve vasúti fuvardíjat, lépésenkénti levezetéssel.</p>
+  </section>
+
+  <div class="summary">
+    <dl class="kpis" id="kpis" aria-live="polite"></dl>
+    <div class="modes" id="modes"></div>
+  </div>
+  <div class="warn" id="warn" role="status"></div>
+
+  <section class="card panel" id="s-fal">
+    <div class="card-h"><span class="no">1</span><div><h2>LED-fal</h2><p>Kabinet vagy modul, darabszám vagy falméret alapján</p></div></div>
+    <div class="grid">
+      <label class="c2">LED-kabinet / modul<select id="cab"></select></label>
+      <label>Egységtömeg<span class="unit"><input id="cabKg" type="number" min="0" step="any" inputmode="decimal"><em>kg/db</em></span></label>
+      <label>Megadás módja<span class="seg" role="group" aria-label="Megadás módja"><button type="button" id="byQty" aria-pressed="true">Darab</button><button type="button" id="byWall" aria-pressed="false">Falméret</button></span></label>
+      <label id="qtyBox">Darabszám<span class="unit"><input id="qty" type="number" min="0" step="1" inputmode="numeric" value="24"><em>db</em></span></label>
+      <label id="wBox" hidden>Fal szélessége<span class="unit"><input id="wallW" type="number" min="0" step="any" inputmode="decimal" value="6"><em>m</em></span></label>
+      <label id="hBox" hidden>Fal magassága<span class="unit"><input id="wallH" type="number" min="0" step="any" inputmode="decimal" value="3"><em>m</em></span></label>
+      <label id="cwBox">Kabinet szélesség<span class="unit"><input id="cabW" type="number" min="0" step="any" inputmode="decimal"><em>mm</em></span></label>
+      <label id="chBox">Kabinet magasság<span class="unit"><input id="cabH" type="number" min="0" step="any" inputmode="decimal"><em>mm</em></span></label>
+    </div>
+    <div class="info" id="wallInfo" hidden></div>
+    <p class="src" id="cabSrc"></p>
+  </section>
+
+  <section class="card panel" id="s-tart">
+    <div class="card-h"><span class="no">2</span><div><h2>Tartozékok</h2><p>Rigg, truss, kábel, csavar, lemez, saját tétel</p></div></div>
+    <div class="rows" id="items"></div>
+    <div class="chips" id="itemChips"></div>
+  </section>
+
+  <section class="card panel" id="s-csom">
+    <div class="card-h"><span class="no">3</span><div><h2>Csomagolás</h2><p>LED-ládák és külön csomagok (rackláda, tartozékdoboz, raklap)</p></div></div>
+    <div class="grid">
+      <label class="c2">LED-láda<select id="case"></select></label>
+      <label>Kapacitás<span class="unit"><input id="caseCap" type="number" min="1" step="1" inputmode="numeric"><em>db/láda</em></span></label>
+      <label>Ládaszám (felülírás)<span class="unit"><input id="caseCount" type="number" min="0" step="1" inputmode="numeric" placeholder="Automatikus"><em>db</em></span></label>
+      <label>Üres láda tömege<span class="unit"><input id="caseTare" type="number" min="0" step="any" inputmode="decimal"><em>kg</em></span></label>
+      <label>Belső csomagolás<span class="unit"><input id="caseFill" type="number" min="0" step="any" inputmode="decimal" value="0"><em>kg/láda</em></span></label>
+      <label>Hossz<span class="unit"><input id="caseL" type="number" min="0" step="any" inputmode="decimal"><em>cm</em></span></label>
+      <label>Szélesség<span class="unit"><input id="caseWd" type="number" min="0" step="any" inputmode="decimal"><em>cm</em></span></label>
+      <label>Magasság<span class="unit"><input id="caseHt" type="number" min="0" step="any" inputmode="decimal"><em>cm</em></span></label>
+    </div>
+    <div class="info" id="caseInfo"></div>
+    <p class="src" id="caseSrc"></p>
+    <div class="subt">Külön csomagok</div>
+    <div class="rows" id="packs"></div>
+    <div class="chips" id="packChips"></div>
+  </section>
+
+  <section class="card panel" id="s-fuvar">
+    <div class="card-h"><span class="no">4</span><div><h2>Fuvar</h2><p>Kína → Észak-Európa piaci referencia, saját ajánlattal felülírható</p></div></div>
+    <div class="fx">
+      <label style="width:auto">Pénznem<span class="seg" role="group" aria-label="Pénznem"><button type="button" data-cur="HUF" aria-pressed="false">HUF</button><button type="button" data-cur="EUR" aria-pressed="false">EUR</button><button type="button" data-cur="USD" aria-pressed="true">USD</button></span></label>
+      <span class="fxnote" id="fxNote"></span>
+    </div>
+    <div class="freight">
+      <article class="fcard" id="air" style="--c:var(--air)">
+        <h3>✈ Légi fuvar <span id="airTransit"></span></h3>
+        <div class="grid">
+          <label>Egységdíj<span class="unit"><input data-money="airRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit>/kg</em></span></label>
+          <label>Térfogati osztó<span class="unit"><input id="airDiv" type="number" min="1" step="any" inputmode="decimal"><em>cm³/kg</em></span></label>
+          <label>Minimumdíj<span class="unit"><input data-money="airMin" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Járulékos költség<span class="unit"><input data-money="airExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <p class="ratebadge" id="airRateSrc"></p>
+        <ol class="steps-out" id="airSteps"></ol>
+        <div class="total"><span>Becsült légi fuvardíj</span><div><b id="airTotal">–</b><small id="airTotalAlt"></small></div></div>
+      </article>
+
+      <article class="fcard" id="sea" style="--c:var(--sea)">
+        <h3>⚓ Tengeri fuvar <span id="seaTransit"></span></h3>
+        <div style="margin-top:10px"><span class="seg" role="group" aria-label="Tengeri mód"><button type="button" data-sea="lcl" aria-pressed="true">Gyűjtőáru (LCL)</button><button type="button" data-sea="fcl" aria-pressed="false">Konténer (FCL)</button></span></div>
+        <div class="grid" id="seaLclBox">
+          <label>Egységdíj<span class="unit"><input data-money="seaLclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit>/RT</em></span></label>
+          <label>W/M arány<span class="unit"><input id="seaWM" type="number" min="1" step="any" inputmode="decimal"><em>kg/m³</em></span></label>
+          <label>Minimumdíj<span class="unit"><input data-money="seaLclMin" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Járulékos költség<span class="unit"><input data-money="seaLclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <div class="grid" id="seaFclBox" hidden>
+          <label class="c2">Konténer<select id="seaCont"></select></label>
+          <label>Díj / konténer<span class="unit"><input data-money="seaFclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Kihasználtság<span class="unit"><input id="seaFill" type="number" min="1" max="100" step="1" inputmode="numeric"><em>%</em></span></label>
+          <label class="c2">Járulékos költség<span class="unit"><input data-money="seaFclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <p class="ratebadge" id="seaRateSrc"></p>
+        <ol class="steps-out" id="seaSteps"></ol>
+        <div class="total"><span>Becsült tengeri fuvardíj</span><div><b id="seaTotal">–</b><small id="seaTotalAlt"></small></div></div>
+      </article>
+
+      <article class="fcard" id="rail" style="--c:var(--rail)">
+        <h3>🚆 Vasúti fuvar <span id="railTransit"></span></h3>
+        <div style="margin-top:10px"><span class="seg" role="group" aria-label="Vasúti mód"><button type="button" data-rail="lcl" aria-pressed="true">Gyűjtőáru (LCL)</button><button type="button" data-rail="fcl" aria-pressed="false">Konténer (FCL)</button></span></div>
+        <div class="grid" id="railLclBox">
+          <label>Egységdíj<span class="unit"><input data-money="railLclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit>/m³</em></span></label>
+          <label>Térfogati tényező<span class="unit"><input id="railFactor" type="number" min="1" step="any" inputmode="decimal"><em>kg/m³</em></span></label>
+          <label>Minimumdíj<span class="unit"><input data-money="railLclMin" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Járulékos költség<span class="unit"><input data-money="railLclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <div class="grid" id="railFclBox" hidden>
+          <label class="c2">Konténer<select id="railCont"></select></label>
+          <label>Díj / konténer<span class="unit"><input data-money="railFclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Kihasználtság<span class="unit"><input id="railFill" type="number" min="1" max="100" step="1" inputmode="numeric"><em>%</em></span></label>
+          <label class="c2">Járulékos költség<span class="unit"><input data-money="railFclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <p class="ratebadge" id="railRateSrc"></p>
+        <ol class="steps-out" id="railSteps"></ol>
+        <div class="total"><span>Becsült vasúti fuvardíj</span><div><b id="railTotal">–</b><small id="railTotalAlt"></small></div></div>
+      </article>
+    </div>
+    <p class="src" id="routeNote"></p>
+  </section>
+
+  <section class="card panel" id="s-forras">
+    <div class="card-h"><span class="no">i</span><div><h2>Források és frissítés</h2><p id="srcMeta"></p></div></div>
+    <ul class="sources" id="sources"></ul>
+  </section>
+  <footer>A becslés tájékoztató. A végleges díjat a fuvarozó ajánlata, a mért csomagadatok és a pótdíjak határozzák meg. Az indexek spot-piaci átlagok, nem ajánlatok.</footer>
+</main>
+
+<nav class="dock" id="dock" aria-label="Összesítő">
+  <a href="#s-top"><span>Bruttó</span><b id="dGross">–</b></a>
+  <a href="#air"><span>Légi</span><b id="dAir">–</b></a>
+  <a href="#sea"><span>Tengeri</span><b id="dSea">–</b></a>
+  <a href="#rail"><span>Vasúti</span><b id="dRail">–</b></a>
+</nav>
+<script type="module">
+// LED-fal súly- és fuvarszámítás – tiszta függvények, külső függőség nélkül.
+// Minden bemenet lehet null (hiányzó adat); ilyenkor az érintett eredmény is null.
+
+const ok = v => typeof v === 'number' && Number.isFinite(v) && v >= 0;
+const sum = arr => arr.reduce((a, b) => a + b, 0);
+const ceilStep = (v, step) => (step > 0 ? Math.ceil(v / step - 1e-9) * step : v);
+
+/** Falméretből kabinetszám (oszlop × sor), felfelé kerekítve. */
+function wallLayout(widthM, heightM, cabW, cabH) {
+  if (![widthM, heightM, cabW, cabH].every(v => ok(v) && v > 0)) return null;
+  const cols = Math.ceil((widthM * 1000) / cabW - 1e-9);
+  const rows = Math.ceil((heightM * 1000) / cabH - 1e-9);
+  return { cols, rows, count: cols * rows, realW: (cols * cabW) / 1000, realH: (rows * cabH) / 1000 };
+}
+
+const boxVolume = dims => (dims.every(d => ok(d) && d > 0) ? dims.reduce((a, b) => a * b, 1) / 1e6 : null);
+
+/**
+ * Szállítmány összesítése.
+ * cabinets: {qty, kg}
+ * items: [{qty, kg}]
+ * mainCase: {capacity, count (felülírás vagy null), tare, fill, dims:[cm,cm,cm]}
+ * packs: [{count, tare, fill, dims}]
+ */
+function shipment({ cabinets, items = [], mainCase, packs = [] }) {
+  const missing = [];
+  const qty = ok(cabinets.qty) ? cabinets.qty : null;
+  if (qty === null) missing.push('kabinetszám');
+  if (qty > 0 && !ok(cabinets.kg)) missing.push('kabinet egységtömege');
+
+  const cabNet = qty === null ? null : qty === 0 ? 0 : ok(cabinets.kg) ? qty * cabinets.kg : null;
+  const itemNets = items.map(i => (!ok(i.qty) ? null : i.qty === 0 ? 0 : ok(i.kg) ? i.qty * i.kg : null));
+  if (itemNets.some(v => v === null)) missing.push('tartozék tömege vagy mennyisége');
+  const accNet = itemNets.some(v => v === null) ? null : sum(itemNets);
+  const net = cabNet === null || accNet === null ? null : cabNet + accNet;
+
+  // Fő LED-ládák
+  const autoCount = qty !== null && ok(mainCase.capacity) && mainCase.capacity > 0 ? Math.ceil(qty / mainCase.capacity) : null;
+  const caseCount = ok(mainCase.count) ? mainCase.count : autoCount;
+  if (caseCount === null && qty > 0) missing.push('ládakapacitás');
+  const capacityWarning = caseCount !== null && ok(mainCase.capacity) && mainCase.capacity > 0 && qty !== null && caseCount * mainCase.capacity < qty;
+  const capacityLeft = caseCount !== null && ok(mainCase.capacity) && qty !== null ? caseCount * mainCase.capacity - qty : null;
+
+  const groups = [{ ...mainCase, count: caseCount, main: true }, ...packs.map(p => ({ ...p, count: ok(p.count) ? p.count : null }))];
+  let tare = 0, fill = 0, volume = 0, count = 0;
+  for (const g of groups) {
+    if (g.count === null) { tare = fill = volume = count = null; if (!g.main) missing.push('csomagszám'); break; }
+    if (g.count === 0) continue;
+    const v = boxVolume(g.dims || []);
+    if (tare !== null) tare = ok(g.tare) ? tare + g.count * g.tare : null;
+    if (fill !== null) fill = ok(g.fill) ? fill + g.count * g.fill : null;
+    if (volume !== null) volume = v === null ? null : volume + g.count * v;
+    count += g.count;
+    if (!ok(g.tare)) missing.push(g.main ? 'LED-láda önsúlya' : 'külön csomag önsúlya');
+    if (v === null) missing.push(g.main ? 'LED-láda külső mérete' : 'külön csomag külső mérete');
+  }
+  const packaging = tare === null || fill === null ? null : tare + fill;
+  const gross = net === null || packaging === null ? null : net + packaging;
+  return {
+    cabNet, accNet, net, tare, fill, packaging, gross, volume, count, caseCount, capacityWarning, capacityLeft,
+    missing: [...new Set(missing)],
+  };
+}
+
+const charge = (units, rate, min, extras) =>
+  units === null || !ok(rate) ? null : Math.max(units * rate, ok(min) ? min : 0) + (ok(extras) ? extras : 0);
+
+/** Légi: díjsúly = max(bruttó, térfogat × 10⁶ / osztó), fél kg-ra felfelé. */
+function airFreight(res, { divisor = 6000, step = 0.5, rate, min = 0, extras = 0 }) {
+  const blocked = res.capacityWarning;
+  const volW = res.volume === null || !(divisor > 0) ? null : (res.volume * 1e6) / divisor;
+  const chg = blocked || res.gross === null || volW === null ? null : ceilStep(Math.max(res.gross, volW), step);
+  return { volW, chg, basis: volW !== null && res.gross !== null && volW > res.gross ? 'térfogat' : 'tömeg', cost: charge(chg, rate, min, extras) };
+}
+
+/** Tengeri gyűjtőáru (LCL): RT = max(m³, t), legalább minRT. */
+function seaLcl(res, { wm = 1000, minRT = 1, rate, min = 0, extras = 0 }) {
+  if (res.capacityWarning || res.volume === null || res.gross === null || !(wm > 0)) return { rt: null, cost: null };
+  const t = res.gross / wm;
+  const rt = Math.max(ceilStep(Math.max(res.volume, t), 0.01), ok(minRT) ? minRT : 0);
+  return { rt, t, basis: res.volume >= t ? 'térfogat' : 'tömeg', cost: charge(rt, rate, min, extras) };
+}
+
+/** Teljes konténer (FCL): darabszám térfogat és teherbírás alapján. */
+function fcl(res, { container, fillFactor = 0.85, rate, extras = 0 }) {
+  if (res.capacityWarning || res.volume === null || res.gross === null || !container || !(fillFactor > 0)) return { n: null, cost: null };
+  const usable = container.volume * Math.min(fillFactor, 1);
+  const byVol = Math.max(1, Math.ceil(res.volume / usable - 1e-9));
+  const byWt = Math.max(1, Math.ceil(res.gross / container.payload - 1e-9));
+  const n = Math.max(byVol, byWt);
+  return { n, byVol, byWt, usable, util: res.volume / (n * container.volume), cost: ok(rate) ? n * rate + (ok(extras) ? extras : 0) : null };
+}
+
+/** Vasúti gyűjtőáru: díjköteles m³ = max(m³, bruttó kg / tényező). */
+function railLcl(res, { factor = 333, rate, min = 0, extras = 0 }) {
+  if (res.capacityWarning || res.volume === null || res.gross === null || !(factor > 0)) return { chgM3: null, cost: null };
+  const wtM3 = res.gross / factor;
+  const chgM3 = ceilStep(Math.max(res.volume, wtM3), 0.01);
+  return { chgM3, wtM3, basis: res.volume >= wtM3 ? 'térfogat' : 'tömeg', cost: charge(chgM3, rate, min, extras) };
+}
+
+/** USD → választott pénznem az EKB-árfolyammal. */
+function convert(usd, cur, fx) {
+  if (usd === null) return null;
+  if (cur === 'USD') return usd;
+  const eur = usd / fx.eurUsd;
+  return cur === 'EUR' ? eur : eur * fx.eurHuf;
+}
+
+// LED-fal súly- és fuvarkalkulátor – felület
+const EMBEDDED = {"meta":{"version":1,"updated":"2026-11-18","note":"Csak nyilvános forrásból származó adatok. Ahol a gyártó nem közöl értéket, ott null szerepel, a felület hiányzó adatként jelöli.","route":"Kína (Shanghai) → Észak-Európa (Rotterdam / Duisburg). A magyarországi utófuvart a járulékos költségnél kell megadni."},"fx":{"date":"2026-11-11","eurUsd":1.1127,"eurHuf":365.08,"source":"EKB euró referencia-árfolyam (Banca d'Italia közzététele)","url":"https://www.bancaditalia.it/compiti/operazioni-cambi/cambio/cambi_rif_20261111"},"cabinets":[{"id":"roe-bp2v2","brand":"ROE Visual","name":"Black Pearl BP2V2 · P2.84","w":500,"h":500,"d":90,"kg":9.35,"env":"beltéri","case":null,"source":"ROE Visual BP2V2 brosúra (2024)","url":"https://www.roevisual.com/uploads/files/Product File/Black Pearl/bp2v2-brochure-en-feb.-3-2024.pdf"},{"id":"roe-bp3","brand":"ROE Visual","name":"Black Pearl BP3 · P3.91","w":500,"h":500,"d":90,"kg":8.7,"env":"beltéri","case":null,"source":"ROE Visual Black Pearl brosúra","url":"https://www.roevisual.com/uploads/assets/uploads/bp-brochure-preview-mar-29-2022.pdf"},{"id":"roe-cb5mk2","brand":"ROE Visual","name":"Carbon CB5 MKII · P5.77","w":600,"h":1200,"d":79,"kg":13.6,"env":"kültéri/beltéri","case":null,"source":"ROE Visual CB MKII brosúra (2026. ápr.)","url":"https://www.roevisual.com/uploads/files/Product File/CB MKⅡ/cb-mkll-brochure-apr-1_-2026.pdf"},{"id":"roe-cb8mk2","brand":"ROE Visual","name":"Carbon CB8 MKII · P8.33","w":600,"h":1200,"d":79,"kg":11,"env":"kültéri/beltéri","case":null,"source":"ROE Visual CB MKII brosúra (2026. ápr.)","url":"https://www.roevisual.com/uploads/files/Product File/CB MKⅡ/cb-mkll-brochure-apr-1_-2026.pdf"},{"id":"absen-pl39v3-1000","brand":"Absen","name":"PL3.9 Pro V3 · 500 × 1000","w":500,"h":1000,"d":88,"kg":12,"env":"kültéri/beltéri","case":"absen-pl-5","source":"Absen PL V3 termékoldal","url":"https://www.absen.com/product/pl-v3-series/"},{"id":"absen-pl39v3-500","brand":"Absen","name":"PL3.9 Pro V3 · 500 × 500","w":500,"h":500,"d":null,"kg":7,"env":"kültéri/beltéri","case":"absen-pl-10","source":"Absen PL V3 termékoldal","url":"https://www.absen.com/product/pl-v3-series/"},{"id":"unilumin-upad4","brand":"Unilumin","name":"UpadIV · P2.6","w":500,"h":500,"d":null,"kg":6.3,"env":"beltéri","case":null,"source":"Unilumin UpadIV termékoldal","url":"https://cdn.unilumin.com/products/rental/upadiv.html"},{"id":"adj-vs3ip","brand":"ADJ","name":"VS3IP · P3.84","w":576,"h":576,"d":76.8,"kg":9,"env":"kültéri (ideiglenes)/beltéri","case":"adj-vs3ip-8","source":"ADJ VS3IP adatlap","url":"https://goknight.com/content/documentation/vs3ip-cut-sheet-rev.pdf"},{"id":"unilumin-usurface","brand":"Unilumin","name":"Usurface fix kültéri · 960 × 960","w":960,"h":960,"d":85,"kg":24.42,"env":"kültéri, fix","case":null,"source":"Unilumin Usurface: 26,5 kg/m² × 0,9216 m² (számított kabinettömeg)","url":"https://india.unilumin.com/?p=4150"},{"id":"unilumin-ufix2","brand":"Unilumin","name":"UfixII6 fix kültéri · 960 × 960","w":960,"h":960,"d":111,"kg":26.73,"env":"kültéri, fix","case":null,"source":"Unilumin UfixII adatlap: 29 kg/m² × 0,9216 m² (számított kabinettömeg)","url":"https://www.unilumin.com/media/upload/products/UfixII/UfixII.pdf"},{"id":"custom","brand":"Saját","name":"Saját LED-kabinet vagy modul","w":null,"h":null,"d":null,"kg":null,"env":"","case":"custom","source":"A méretet és a tömeget a gyártói adatlapból add meg.","url":null}],"cases":[{"id":"adj-vs3ip-8","name":"ADJ touring case · 8 × VS3IP","capacity":8,"tare":52.5,"dims":[101,66,86],"source":"ADJ VS3IPFC8 adatai (forgalmazói oldal)","url":"https://goknight.com/adj-vs3ipfc8-flight-case-for-8-vs3ip/"},{"id":"adj-av3fc","name":"ADJ AV3FC · 8 panel","capacity":8,"tare":36.3,"dims":[104.1,55.9,73.7],"source":"ADJ AV3FC: 80 lbs, 41 × 22 × 29 in (forgalmazói oldal, átszámítva)","url":"https://goknight.com/american-dj-av3fc-road-case-for-av3-video-panels"},{"id":"absen-pl-10","name":"Absen PL V3 · 10-es láda (500 × 500)","capacity":10,"tare":null,"dims":[null,null,null],"source":"Absen: 10-in-1 láda 500 × 500 panelekhez. Méretet és tömeget a gyártó nem közöl.","url":"https://www.absen.com/product/pl-v3-series/"},{"id":"absen-pl-5","name":"Absen PL V3 · 5-ös láda (500 × 1000)","capacity":5,"tare":null,"dims":[null,null,null],"source":"Absen: 5-in-1 láda 500 × 1000 panelekhez. Méretet és tömeget a gyártó nem közöl.","url":"https://www.absen.com/product/pl-v3-series/"},{"id":"custom","name":"Saját flight case","capacity":null,"tare":null,"dims":[null,null,null],"source":"Add meg a kapacitást, az üres láda tömegét és a legkülső méretet (kerekekkel együtt).","url":null}],"accessories":[{"id":"h30v-050","group":"Truss","name":"Prolyte H30V · 0,5 m","unit":"db","kg":4.2,"source":"A.C. Lighting (Prolyte forgalmazó)","url":"https://aclighting.com/h30v-square-truss-length"},{"id":"h30v-150","group":"Truss","name":"Prolyte H30V · 1,5 m","unit":"db","kg":10.1,"source":"Prolyte","url":"https://www.prolyte.com/products/aluminium-truss/square-truss/h30v-l100-square-30-length-100-cm"},{"id":"h30v-200","group":"Truss","name":"Prolyte H30V · 2 m","unit":"db","kg":12.9,"source":"Prolyte","url":"https://www.prolyte.com/products/aluminium-truss/square-truss/h30v-l100-square-30-length-100-cm"},{"id":"h30v-250","group":"Truss","name":"Prolyte H30V · 2,5 m","unit":"db","kg":15.7,"source":"Prolyte","url":"https://www.prolyte.com/products/aluminium-truss/square-truss/h30v-l100-square-30-length-100-cm"},{"id":"h30v-300","group":"Truss","name":"Prolyte H30V · 3 m","unit":"db","kg":18.9,"source":"Prolyte","url":"https://www.prolyte.com/products/aluminium-truss/square-truss/h30v-l100-square-30-length-100-cm"},{"id":"h30v-400","group":"Truss","name":"Prolyte H30V · 4 m","unit":"db","kg":24.6,"source":"Prolyte","url":"https://www.prolyte.com/products/aluminium-truss/square-truss/h30v-l100-square-30-length-100-cm"},{"id":"rigbar-050","group":"Rigg","name":"Függesztő rig bar · 0,5 m (Chauvet DRB-F50CM)","unit":"db","kg":5.5,"source":"Chauvet adatlap","url":"https://www.chauvetdj.com/wp-content/uploads/pdf/en/drb-f50cm.pdf"},{"id":"rigbar-050ip","group":"Rigg","name":"Függesztő rig bar · 0,5 m IP65 (Chauvet DRB-F50CMIP)","unit":"db","kg":3.99,"source":"Chauvet adatlap","url":"https://www.chauvetprofessional.com/wp-content/uploads/pdf/en/drb-f50cmip.pdf"},{"id":"h07rn-3g25","group":"Kábel","name":"Tápkábel H07RN-F 3G2,5 (Nexans Titanex Premium)","unit":"m","kg":0.195,"source":"Nexans adatlap, 195 kg/km","url":"https://www.romal.com/en/amfile/file/download/file/605745/product/8886"},{"id":"h07rn-3g15","group":"Kábel","name":"Tápkábel H07RN-F 3G1,5 (Nexans Titanex Premium)","unit":"m","kg":0.134,"source":"Nexans adatlap, 134 kg/km","url":"https://www.romal.com/en/amfile/file/download/file/605745/product/8886"},{"id":"cat6a","group":"Kábel","name":"Jelkábel Cat.6A S/FTP (R&M)","unit":"m","kg":0.048,"source":"R&M adatlap, 48 kg/km","url":"https://efobasen.efo.no/mime_root/1421/DATA_SH C6A S-FTP 650MHz LSZH GY R305649-R (1).pdf"},{"id":"din912-m10x30","group":"Kötőelem","name":"Csavar DIN 912 M10 × 30 · 8.8","unit":"db","kg":0.027,"source":"Landefeld termékadat, 27 g/db","url":"https://www.landefeld.de/artikel/en/socket-head-cap-screw-din-912-m-10x30-galvanised-steel-8-8/912-M10X30"},{"id":"steel-1","group":"Lemez","name":"Acéllemez 1 mm","unit":"m²","kg":7.85,"source":"Számított: 7850 kg/m³ acélsűrűség × 1 mm","url":null},{"id":"steel-2","group":"Lemez","name":"Acéllemez 2 mm","unit":"m²","kg":15.7,"source":"Számított: 7850 kg/m³ acélsűrűség × 2 mm","url":null},{"id":"steel-3","group":"Lemez","name":"Acéllemez 3 mm","unit":"m²","kg":23.55,"source":"Számított: 7850 kg/m³ acélsűrűség × 3 mm","url":null},{"id":"alu-2","group":"Lemez","name":"Alumíniumlemez 2 mm","unit":"m²","kg":5.4,"source":"Számított: 2700 kg/m³ alumíniumsűrűség × 2 mm","url":null},{"id":"rack-gear","group":"Egyéb","name":"Rack és beépített eszközök (mért tömeg)","unit":"db","kg":null,"source":"Tápegységekkel és vezérlőkkel együtt mért tömeget add meg.","url":null},{"id":"custom","group":"Egyéb","name":"Saját tétel","unit":"db","kg":null,"source":"Saját mérés vagy gyártói adat.","url":null}],"packs":[{"id":"eur-pallet","name":"EUR raklap 1200 × 800 (rakomány nélkül)","tare":25,"dims":[120,80,14.4],"source":"EUR/EPAL raklap: 1200 × 800 × 144 mm, kb. 25 kg. A megrakott magasságot írd be!","url":"https://kiwix.lema.org/wikipedia_en_all_mini_2024-02/A/EUR-pallet"},{"id":"rack-8u","name":"Rackláda 8U (Roadinger SLA-1)","tare":15.3,"dims":[63.5,55,49.5],"source":"Steinigke/Roadinger termékadat","url":"https://www.steinigke.at/en/mpn30109270-roadinger-amplifier-rack-sla-1-8u.html"},{"id":"roe-acc","name":"Tartozékláda (ROE Visual accessory case)","tare":null,"dims":[116,61.9,58.7],"source":"ROE tartozékláda külső mérete; tömegét a gyártó nem közli.","url":"https://www.bhphotovideo.com/c/product/1908393-REG/roe_visual_309003_01756_accessory_flight_case_1160.html"},{"id":"custom","name":"Saját láda, doboz vagy raklap","tare":null,"dims":[null,null,null],"source":"Önsúly és legkülső méret.","url":null}],"rules":{"airDivisor":6000,"airStep":0.5,"airSource":"IATA légi térfogati osztó 6000 cm³/kg (1 m³ = 166,67 kg); díjsúly fél kg-ra felfelé kerekítve","airUrl":"https://www.rohlig.com/infocenter/air-freight/weightvolume-ratio.html","seaWM":1000,"seaMinRT":1,"seaSource":"Tengeri gyűjtőáru (LCL) W/M szabály: 1 m³ = 1000 kg (1 revenue ton), jellemzően 1 RT minimum","seaUrl":"https://blog.gettransport.com/logistics-guide/chargeable-volumetric-weight-calculation-2026/","railFactor":333,"railSource":"Vasúti/közúti tarifákon gyakori 3000 cm³/kg osztó (1 m³ = 333 kg) – az ajánlat szerint módosítsd","railUrl":"https://golocad.com/tools/chargeable-weight-calculator/","fillFactor":0.85,"fillNote":"Konténer-kihasználtság: tervezési feltételezés (nem forrásadat), ládázott, nem egymásra rakható áru esetén módosítsd."},"containers":[{"id":"20gp","name":"20' standard","inner":[589.5,235,239.2],"volume":33.2,"payload":28230,"source":"Hapag-Lloyd konténerspecifikáció","url":"https://fr.slideshare.net/Intlforeigntrade/especificao-de-containers"},{"id":"40gp","name":"40' standard","inner":[1202.9,235,239.2],"volume":67.6,"payload":26700,"source":"Hapag-Lloyd specifikáció (freightfigures összefoglaló)","url":"https://www.freightfigures.com/articles/shipping-container-dimensions"},{"id":"40hc","name":"40' High Cube","inner":[1202.4,235,269.7],"volume":76.3,"payload":26460,"source":"Hapag-Lloyd adatai (TIS-GDV)","url":"https://www.tis-gdv.de/?p=1144"}],"rates":{"currency":"USD","air":{"value":4.87,"unit":"USD/kg","date":"2026-11-10","label":"Freightos Air Index · Kína → Észak-Európa","source":"Freightos heti jelentés (EcomCrew összefoglaló)","url":"https://www.ecomcrew.com/less-cargo-higher-air-freight-what-europe-sellers-are-paying/"},"seaFcl40":{"value":3504,"unit":"USD/40'","date":"2026-11-12","label":"Drewry WCI · Shanghai → Rotterdam","source":"Drewry World Container Index (Translindo összefoglaló)","url":"https://www.translindogroup.com/2026/11/16/sea-or-air-for-your-next-shipment-year-end-rates-compared/"},"seaFcl40alt":{"value":3588,"unit":"USD/40'","date":"2026-11-13","label":"Xeneta · Távol-Kelet → Észak-Európa (piaci átlag)","source":"Xeneta heti piaci jelentés","url":"https://hellenicshippingnews.com/xeneta-weekly-ocean-container-shipping-market-update-rates-start-to-tumble-from-far-east-to-us-east-coast-following-record-breaking-capacity-in-october"},"seaFcl20":{"value":null,"unit":"USD/20'","date":null,"label":"20' konténerre nincs nyilvános heti index","source":"Kérj ajánlatot.","url":null},"seaLcl":{"value":130,"low":80,"high":180,"unit":"USD/RT","date":"2026","label":"Tengeri LCL Kína → Európa · tájékoztató sáv közepe","source":"Youna Global 2026-os útmutató (80–180 USD/m³)","url":"https://www.youna-global.com/blog/blog-sea-freight-from-china-2026.html"},"railFcl40":{"value":4650,"low":4200,"high":5100,"unit":"USD/40'","date":"2026 Q1","label":"Vasút Xi'an → Duisburg · tájékoztató sáv közepe","source":"FreightSurcharge 2026 Q1 útmutató (4200–5100 USD/40')","url":"https://freightsurcharge.com/blog/china-europe-rail-freight-complete-guide-2026"},"railLcl":{"value":185,"low":160,"high":210,"unit":"USD/m³","date":"2026 eleje","label":"Vasúti LCL · tájékoztató sáv közepe","source":"AliChinaFreight 2026-os útmutató (160–210 USD/m³)","url":"https://alichinafreight.com/2026-china-europe-rail-freight-cost-complete-shipping-guide/"}},"transit":{"air":{"text":"1–3 nap","source":"BSI Freight 2026","url":"https://www.bsifreight.com/knowledge/guides-resources/air-freight-rates-from-china-to-world"},"rail":{"text":"15–22 nap","source":"Welltrans Logistics","url":"https://welltrans-logistics.com/rail-freight-china-to-europe-silk-road-guide/"},"sea":{"text":"40–45 nap (európai főkikötőig)","source":"SINO Shipping 2026. októberi piaci jelentés","url":"https://www.sino-shipping.com/global-freight-market-update-october-2026/"}}};
+const DATA_URL = 'https://raw.githubusercontent.com/leho-cloud/kalkulator/main/led-fuvar/data.json';
+const STORE = 'tzsvtav.ledfuvar.v1';
+
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+const nf = (v, d = 2) => new Intl.NumberFormat('hu-HU', { maximumFractionDigits: d }).format(v);
+const val = v => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : null);
+const numIn = input => { const v = input.valueAsNumber; return Number.isFinite(v) && v >= 0 ? v : null; };
+const setIn = (input, v) => { input.value = v === null || v === undefined ? '' : String(+(+v).toFixed(6)); };
+const safeUrl = u => (typeof u === 'string' && /^https:\/\//.test(u) ? u : null);
+
+let D = EMBEDDED;
+let S = loadState();
+
+function defaults() {
+  const r = D.rates;
+  return {
+    cabId: (D.cabinets.find(c => c.id === 'adj-vs3ip') || D.cabinets[0]).id, cabKg: null, cabW: null, cabH: null, mode: 'qty', qty: 24, wallW: 6, wallH: 3,
+    items: [], caseId: null, caseCap: null, caseCount: null, caseTare: null, caseFill: 0, caseDims: [null, null, null],
+    packs: [], cur: 'HUF', seaMode: 'lcl', railMode: 'lcl', seaCont: '40hc', railCont: '40hc',
+    airDiv: D.rules.airDivisor, seaWM: D.rules.seaWM, railFactor: D.rules.railFactor,
+    seaFill: Math.round(D.rules.fillFactor * 100), railFill: Math.round(D.rules.fillFactor * 100),
+    money: {
+      airRate: r.air.value, airMin: 0, airExtra: 0,
+      seaLclRate: r.seaLcl.value, seaLclMin: 0, seaLclExtra: 0, seaFclRate: r.seaFcl40.value, seaFclExtra: 0,
+      railLclRate: r.railLcl.value, railLclMin: 0, railLclExtra: 0, railFclRate: r.railFcl40.value, railFclExtra: 0,
+    },
+    edited: {}, fresh: true,
+  };
+}
+function loadState() {
+  try { const s = JSON.parse(localStorage.getItem(STORE)); if (s && s.money) return s; } catch (e) { /* üres */ }
+  return null;
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { /* privát mód */ } }
+
+// ---- Pénznem ----
+const fx = () => D.fx;
+const toCur = usd => (usd === null ? null : convert(usd, S.cur, fx()));
+const fromCur = v => (v === null ? null : S.cur === 'USD' ? v : S.cur === 'EUR' ? v * fx().eurUsd : (v / fx().eurHuf) * fx().eurUsd);
+const curDigits = () => (S.cur === 'HUF' ? 0 : 2);
+const money = usd => (usd === null ? null : new Intl.NumberFormat('hu-HU', { style: 'currency', currency: S.cur, maximumFractionDigits: curDigits() }).format(toCur(usd)));
+const moneyShort = usd => {
+  if (usd === null) return '–';
+  const v = toCur(usd);
+  if (S.cur === 'HUF') return v >= 1e6 ? nf(v / 1e6, 2) + ' M Ft' : nf(v / 1e3, 0) + ' e Ft';
+  return (S.cur === 'EUR' ? '€' : '$') + nf(v, 0);
+};
+const curSym = () => (S.cur === 'HUF' ? 'Ft' : S.cur === 'EUR' ? '€' : '$');
+
+// ---- Kitöltők ----
+function fillSelect(sel, list, label, group) {
+  sel.replaceChildren();
+  const groups = new Map();
+  for (const it of list) {
+    const g = group ? group(it) : '';
+    if (!groups.has(g)) groups.set(g, []);
+    groups.get(g).push(it);
+  }
+  for (const [g, arr] of groups) {
+    const parent = g ? Object.assign(document.createElement('optgroup'), { label: g }) : sel;
+    for (const it of arr) parent.append(new Option(label(it), it.id));
+    if (g) sel.append(parent);
+  }
+}
+function sourceLine(node, item, prefix = 'Forrás: ') {
+  node.replaceChildren();
+  const url = safeUrl(item.url);
+  node.append(prefix);
+  if (url) { const a = el('a', null, item.source); a.href = url; a.target = '_blank'; a.rel = 'noopener'; node.append(a); }
+  else node.append(item.source || '');
+}
+const cabinet = () => D.cabinets.find(c => c.id === S.cabId) || D.cabinets[0];
+const caseDef = () => D.cases.find(c => c.id === S.caseId) || D.cases.find(c => c.id === 'custom');
+
+function applyCabinet(resetCase) {
+  const c = cabinet();
+  S.cabKg = c.kg; S.cabW = c.w; S.cabH = c.h;
+  if (resetCase) applyCase(c.case || 'custom');
+}
+function applyCase(id) {
+  const k = D.cases.find(c => c.id === id) || D.cases.find(c => c.id === 'custom');
+  S.caseId = k.id; S.caseCap = k.capacity; S.caseTare = k.tare; S.caseDims = [...k.dims]; S.caseCount = null; S.caseFill = 0;
+}
+
+// ---- Tételsorok ----
+function itemRow(it, idx) {
+  const def = D.accessories.find(a => a.id === it.id) || D.accessories.at(-1);
+  const row = el('div', 'row');
+  const name = el('label', 'name', 'Tétel');
+  const sel = document.createElement('select');
+  fillSelect(sel, D.accessories, a => a.name, a => a.group);
+  sel.value = def.id;
+  name.append(sel);
+  const q = el('label', 'q', `Mennyiség`); const qi = unitInput(it.qty, def.unit); q.append(qi.wrap);
+  const k = el('label', 'k', 'Egységtömeg'); const ki = unitInput(it.kg, 'kg/' + def.unit); k.append(ki.wrap);
+  const tot = el('div', 'tot num');
+  const del = el('button', 'del', '×'); del.type = 'button'; del.setAttribute('aria-label', 'Tétel törlése');
+  const src = el('p', 'src');
+  sourceLine(src, def);
+  if (def.kg === null) src.classList.add('warnc');
+  let custom = null;
+  if (def.id === 'custom' || def.id === 'rack-gear') {
+    custom = document.createElement('input'); custom.type = 'text'; custom.placeholder = 'Megnevezés (pl. szerszámláda)'; custom.value = it.name || '';
+    custom.addEventListener('input', () => { it.name = custom.value; save(); });
+  }
+  row.append(name);
+  if (custom) { const l = el('label', 'name', 'Megnevezés'); l.append(custom); row.append(l); }
+  row.append(q, k, tot, del, src);
+  sel.addEventListener('change', () => { const d = D.accessories.find(a => a.id === sel.value); it.id = d.id; it.kg = d.kg; renderItems(); update(); });
+  qi.input.addEventListener('input', () => { it.qty = numIn(qi.input); update(); });
+  ki.input.addEventListener('input', () => { it.kg = numIn(ki.input); update(); });
+  del.addEventListener('click', () => { S.items.splice(idx, 1); renderItems(); update(); });
+  it._ui = { q: qi.input, k: ki.input, tot };
+  return row;
+}
+function unitInput(v, unit) {
+  const wrap = el('span', 'unit'); const input = document.createElement('input');
+  input.type = 'number'; input.min = '0'; input.step = 'any'; input.inputMode = 'decimal'; setIn(input, v);
+  wrap.append(input, el('em', null, unit)); return { wrap, input };
+}
+function renderItems() {
+  $('items').replaceChildren(...S.items.map(itemRow));
+  if (!S.items.length) $('items').append(el('p', 'src', 'Még nincs tartozék. Add hozzá alább.'));
+}
+function packRow(p, idx) {
+  const def = D.packs.find(x => x.id === p.id) || D.packs.at(-1);
+  const row = el('div', 'row pack');
+  const name = el('label', 'name', 'Csomag'); const sel = document.createElement('select');
+  fillSelect(sel, D.packs, x => x.name); sel.value = def.id; name.append(sel);
+  const c = el('label', null, 'Darab'); const ci = unitInput(p.count, 'db'); ci.input.step = '1'; c.append(ci.wrap);
+  const t = el('label', null, 'Önsúly'); const ti = unitInput(p.tare, 'kg'); t.append(ti.wrap);
+  const f = el('label', null, 'Belső csom.'); const fi = unitInput(p.fill, 'kg'); f.append(fi.wrap);
+  const dims = el('div', 'dims');
+  const di = ['Hossz', 'Szélesség', 'Magasság'].map((lbl, i) => { const l = el('label', null, lbl); const u = unitInput(p.dims[i], 'cm'); l.append(u.wrap); dims.append(l); u.input.addEventListener('input', () => { p.dims[i] = numIn(u.input); update(); }); return u.input; });
+  const del = el('button', 'del', '×'); del.type = 'button'; del.setAttribute('aria-label', 'Csomag törlése');
+  const src = el('p', 'src'); sourceLine(src, def);
+  row.append(name, c, t, f, dims, del, src);
+  sel.addEventListener('change', () => { const d = D.packs.find(x => x.id === sel.value); Object.assign(p, { id: d.id, tare: d.tare, dims: [...d.dims] }); renderPacks(); update(); });
+  ci.input.addEventListener('input', () => { p.count = numIn(ci.input); update(); });
+  ti.input.addEventListener('input', () => { p.tare = numIn(ti.input); update(); });
+  fi.input.addEventListener('input', () => { p.fill = numIn(fi.input); update(); });
+  p._ui = { c: ci.input, t: ti.input, f: fi.input, d: di };
+  return row;
+}
+function renderPacks() {
+  $('packs').replaceChildren(...S.packs.map(packRow));
+  if (!S.packs.length) $('packs').append(el('p', 'src', 'Nincs külön csomag. Rackládát, tartozékdobozt vagy raklapot alább adhatsz hozzá.'));
+}
+function chips() {
+  const quick = ['h30v-300', 'h30v-200', 'rigbar-050', 'h07rn-3g25', 'cat6a', 'din912-m10x30', 'steel-2', 'rack-gear', 'custom'];
+  $('itemChips').replaceChildren(...quick.map(id => {
+    const a = D.accessories.find(x => x.id === id); if (!a) return document.createTextNode('');
+    const b = el('button', 'chip', '+ ' + a.name.replace(/ \(.*\)$/, '')); b.type = 'button';
+    b.addEventListener('click', () => { S.items.push({ id: a.id, qty: a.unit === 'db' ? 1 : 10, kg: a.kg }); renderItems(); update(); });
+    return b;
+  }));
+  $('packChips').replaceChildren(...D.packs.map(p => {
+    const b = el('button', 'chip', '+ ' + p.name.replace(/ \(.*\)$/, '')); b.type = 'button';
+    b.addEventListener('click', () => { S.packs.push({ id: p.id, count: 1, tare: p.tare, fill: 0, dims: [...p.dims] }); renderPacks(); update(); });
+    return b;
+  }));
+}
+
+// ---- Fő mezők ----
+function bindStatic() {
+  fillSelect($('cab'), D.cabinets, c => `${c.brand} · ${c.name}`, c => c.brand === 'Saját' ? 'Egyéb' : c.brand);
+  fillSelect($('case'), D.cases, c => c.name);
+  for (const id of ['seaCont', 'railCont']) fillSelect($(id), D.containers, c => `${c.name} · ${nf(c.volume, 1)} m³ · ${nf(c.payload, 0)} kg`);
+  $('cab').addEventListener('change', () => { S.cabId = $('cab').value; applyCabinet(true); syncInputs(); update(); });
+  $('case').addEventListener('change', () => { applyCase($('case').value); syncInputs(); update(); });
+  const map = { cabKg: 'cabKg', cabW: 'cabW', cabH: 'cabH', qty: 'qty', wallW: 'wallW', wallH: 'wallH', caseCap: 'caseCap', caseCount: 'caseCount', caseTare: 'caseTare', caseFill: 'caseFill', airDiv: 'airDiv', seaWM: 'seaWM', railFactor: 'railFactor', seaFill: 'seaFill', railFill: 'railFill' };
+  for (const [id, key] of Object.entries(map)) $(id).addEventListener('input', () => { S[key] = numIn($(id)); update(); });
+  ['caseL', 'caseWd', 'caseHt'].forEach((id, i) => $(id).addEventListener('input', () => { S.caseDims[i] = numIn($(id)); update(); }));
+  $('seaCont').addEventListener('change', () => { S.seaCont = $('seaCont').value; update(); });
+  $('railCont').addEventListener('change', () => { S.railCont = $('railCont').value; update(); });
+  $('byQty').addEventListener('click', () => { S.mode = 'qty'; syncInputs(); update(); });
+  $('byWall').addEventListener('click', () => { S.mode = 'wall'; syncInputs(); update(); });
+  document.querySelectorAll('[data-cur]').forEach(b => b.addEventListener('click', () => { S.cur = b.dataset.cur; syncInputs(); update(); }));
+  document.querySelectorAll('[data-sea]').forEach(b => b.addEventListener('click', () => { S.seaMode = b.dataset.sea; syncInputs(); rateBadges(); update(); }));
+  document.querySelectorAll('[data-rail]').forEach(b => b.addEventListener('click', () => { S.railMode = b.dataset.rail; syncInputs(); rateBadges(); update(); }));
+  document.querySelectorAll('[data-money]').forEach(inp => inp.addEventListener('input', () => {
+    const k = inp.dataset.money; S.money[k] = fromCur(numIn(inp)); S.edited[k] = true; update();
+  }));
+}
+function syncInputs() {
+  $('cab').value = S.cabId; $('case').value = S.caseId;
+  setIn($('cabKg'), S.cabKg); setIn($('cabW'), S.cabW); setIn($('cabH'), S.cabH);
+  setIn($('qty'), S.qty); setIn($('wallW'), S.wallW); setIn($('wallH'), S.wallH);
+  setIn($('caseCap'), S.caseCap); setIn($('caseCount'), S.caseCount); setIn($('caseTare'), S.caseTare); setIn($('caseFill'), S.caseFill);
+  ['caseL', 'caseWd', 'caseHt'].forEach((id, i) => setIn($(id), S.caseDims[i]));
+  setIn($('airDiv'), S.airDiv); setIn($('seaWM'), S.seaWM); setIn($('railFactor'), S.railFactor);
+  setIn($('seaFill'), S.seaFill); setIn($('railFill'), S.railFill);
+  $('seaCont').value = S.seaCont; $('railCont').value = S.railCont;
+  const wall = S.mode === 'wall';
+  $('byQty').setAttribute('aria-pressed', String(!wall)); $('byWall').setAttribute('aria-pressed', String(wall));
+  $('qtyBox').hidden = wall; $('wBox').hidden = !wall; $('hBox').hidden = !wall;
+  document.querySelectorAll('[data-cur]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.cur === S.cur)));
+  document.querySelectorAll('[data-sea]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sea === S.seaMode)));
+  document.querySelectorAll('[data-rail]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.rail === S.railMode)));
+  $('seaLclBox').hidden = S.seaMode !== 'lcl'; $('seaFclBox').hidden = S.seaMode !== 'fcl';
+  $('railLclBox').hidden = S.railMode !== 'lcl'; $('railFclBox').hidden = S.railMode !== 'fcl';
+  document.querySelectorAll('[data-money]').forEach(inp => { const v = toCur(S.money[inp.dataset.money]); inp.value = v === null ? '' : String(+v.toFixed(curDigits() === 0 ? 0 : 2)); });
+  document.querySelectorAll('[data-cur-unit]').forEach(e => { const base = e.dataset.base ?? (e.dataset.base = e.textContent); e.textContent = curSym() + base; });
+  const f = fx(); $('fxNote').textContent = `EKB-árfolyam (${f.date}): 1 € = ${nf(f.eurUsd, 4)} $ = ${nf(f.eurHuf, 2)} Ft`;
+}
+
+// ---- Számítás és kirajzolás ----
+const mark = (input, missing) => { input.classList.toggle('missing', !!missing); input.placeholder = missing ? 'Hiányzó adat' : (input.id === 'caseCount' ? 'Automatikus' : ''); };
+function li(list, html) { const n = document.createElement('li'); html.forEach(p => n.append(typeof p === 'string' ? p : p)); list.append(n); }
+const B = t => el('b', null, t);
+
+function update() {
+  const cab = cabinet();
+  // Kabinetszám
+  let qty = S.qty, layout = null;
+  if (S.mode === 'wall') {
+    layout = wallLayout(S.wallW, S.wallH, S.cabW, S.cabH);
+    qty = layout ? layout.count : null;
+    const info = $('wallInfo'); info.hidden = false; info.replaceChildren();
+    if (layout) info.append(B(`${layout.cols} × ${layout.rows} = ${layout.count} kabinet`), ` · valós falméret ${nf(layout.realW, 3)} × ${nf(layout.realH, 3)} m (${nf(layout.realW * layout.realH, 2)} m²)`);
+    else info.append('A falméretből számoláshoz add meg a kabinet szélességét és magasságát.');
+  } else $('wallInfo').hidden = true;
+  sourceLine($('cabSrc'), cab); $('cabSrc').classList.toggle('warnc', cab.kg === null);
+
+  const k = caseDef();
+  const res = shipment({
+    cabinets: { qty, kg: S.cabKg },
+    items: S.items.map(i => ({ qty: i.qty, kg: i.kg })),
+    mainCase: { capacity: S.caseCap, count: S.caseCount, tare: S.caseTare, fill: S.caseFill, dims: S.caseDims },
+    packs: S.packs.map(p => ({ count: p.count, tare: p.tare, fill: p.fill, dims: p.dims })),
+  });
+
+  // Hiányzó mezők jelölése
+  const hasCab = (qty ?? 0) > 0;
+  mark($('cabKg'), hasCab && val(S.cabKg) === null);
+  mark($('qty'), S.mode === 'qty' && val(S.qty) === null);
+  mark($('cabW'), S.mode === 'wall' && val(S.cabW) === null); mark($('cabH'), S.mode === 'wall' && val(S.cabH) === null);
+  const needCase = hasCab && (res.caseCount ?? 1) > 0;
+  mark($('caseCap'), hasCab && val(S.caseCount) === null && val(S.caseCap) === null);
+  mark($('caseTare'), needCase && val(S.caseTare) === null);
+  ['caseL', 'caseWd', 'caseHt'].forEach((id, i) => mark($(id), needCase && !(val(S.caseDims[i]) > 0)));
+  for (const it of S.items) { if (!it._ui) continue; mark(it._ui.k, (it.qty ?? 0) > 0 && val(it.kg) === null); mark(it._ui.q, val(it.qty) === null); it._ui.tot.textContent = val(it.qty) !== null && val(it.kg) !== null ? nf(it.qty * it.kg, 2) + ' kg' : '– kg'; }
+  for (const p of S.packs) { if (!p._ui) continue; const need = (p.count ?? 0) > 0; mark(p._ui.t, need && val(p.tare) === null); p._ui.d.forEach((d, i) => mark(d, need && !(val(p.dims[i]) > 0))); }
+
+  // Láda-információ
+  const ci = $('caseInfo'); ci.replaceChildren();
+  if (res.caseCount !== null && qty !== null) {
+    ci.append(B(`${res.caseCount} LED-láda`), ` · ${qty} kabinet`, val(S.caseCap) ? ` · ${S.caseCap} db/láda` : '', res.capacityLeft > 0 ? ` · ${res.capacityLeft} üres hely` : '');
+  } else ci.append('A ládaszámhoz add meg a láda kapacitását vagy a ládaszámot.');
+  sourceLine($('caseSrc'), k); $('caseSrc').classList.toggle('warnc', k.tare === null);
+
+  // KPI
+  const kpis = [
+    ['Bruttó tömeg', res.gross, 'kg', 1, 'big', res.net !== null ? `nettó ${nf(res.net, 1)} kg` : ''],
+    ['Térfogat', res.volume, 'm³', 3, 'big', 'csomagok külső mérete alapján'],
+    ['Csomagolás', res.packaging, 'kg', 1, '', res.tare !== null ? `láda ${nf(res.tare, 1)} + belső ${nf(res.fill, 1)} kg` : ''],
+    ['Csomagok', res.count, 'db', 0, '', res.caseCount !== null ? `ebből ${res.caseCount} LED-láda` : ''],
+  ];
+  $('kpis').replaceChildren(...kpis.map(([t, v, u, d, cls, sub]) => {
+    const box = el('div', 'kpi ' + cls + (v === null ? ' na' : ''));
+    const dd = el('dd', 'num', v === null ? 'Hiányzó adat' : `${nf(v, d)} ${u}`);
+    if (sub && v !== null) dd.append(el('span', 'sub', sub));
+    box.append(el('dt', null, t), dd); return box;
+  }));
+
+  // Fuvar
+  const M = S.money;
+  const air = airFreight(res, { divisor: S.airDiv, step: D.rules.airStep, rate: M.airRate, min: M.airMin, extras: M.airExtra });
+  const seaC = D.containers.find(c => c.id === S.seaCont); const railC = D.containers.find(c => c.id === S.railCont);
+  const sea = S.seaMode === 'lcl'
+    ? { mode: 'lcl', ...seaLcl(res, { wm: S.seaWM, minRT: D.rules.seaMinRT, rate: M.seaLclRate, min: M.seaLclMin, extras: M.seaLclExtra }) }
+    : { mode: 'fcl', ...fcl(res, { container: seaC, fillFactor: (S.seaFill ?? 0) / 100, rate: M.seaFclRate, extras: M.seaFclExtra }) };
+  const rail = S.railMode === 'lcl'
+    ? { mode: 'lcl', ...railLcl(res, { factor: S.railFactor, rate: M.railLclRate, min: M.railLclMin, extras: M.railLclExtra }) }
+    : { mode: 'fcl', ...fcl(res, { container: railC, fillFactor: (S.railFill ?? 0) / 100, rate: M.railFclRate, extras: M.railFclExtra }) };
+
+  const blockedMsg = res.capacityWarning ? 'A ládák nem elegek – a díj nem számolható.' : null;
+  // Légi levezetés
+  const as = $('airSteps'); as.replaceChildren();
+  if (res.gross !== null && res.volume !== null && air.volW !== null) {
+    li(as, ['Bruttó tömeg: ', B(nf(res.gross, 1) + ' kg')]);
+    li(as, ['Térfogatsúly: ', `${nf(res.volume, 3)} m³ × 1 000 000 ÷ ${nf(S.airDiv, 0)} = `, B(nf(air.volW, 1) + ' kg')]);
+    if (air.chg !== null) li(as, ['Díjsúly = a nagyobb (', air.basis, '), fél kg-ra felfelé: ', B(nf(air.chg, 1) + ' kg')]);
+    if (air.chg !== null && val(M.airRate) !== null) li(as, [`${nf(air.chg, 1)} kg × ${money(M.airRate)}/kg = `, B(money(air.chg * M.airRate)), val(M.airMin) && air.chg * M.airRate < M.airMin ? ` → minimumdíj ${money(M.airMin)}` : '', val(M.airExtra) ? ` + járulékos ${money(M.airExtra)}` : '']);
+  } else li(as, [blockedMsg || 'Hiányzó adat: bruttó tömeg vagy térfogat.']);
+  // Tengeri
+  const ss = $('seaSteps'); ss.replaceChildren();
+  if (blockedMsg) li(ss, [blockedMsg]);
+  else if (sea.mode === 'lcl' && sea.rt !== null) {
+    li(ss, ['Térfogat: ', B(nf(res.volume, 3) + ' m³'), ` · tömeg: `, B(nf(sea.t, 3) + ' t'), ` (${nf(res.gross, 1)} kg ÷ ${nf(S.seaWM, 0)})`]);
+    li(ss, ['Díjköteles egység (W/M) = a nagyobb (', sea.basis, `), min. ${D.rules.seaMinRT} RT: `, B(nf(sea.rt, 2) + ' RT')]);
+    if (val(M.seaLclRate) !== null) li(ss, [`${nf(sea.rt, 2)} RT × ${money(M.seaLclRate)} = `, B(money(sea.rt * M.seaLclRate)), val(M.seaLclMin) && sea.rt * M.seaLclRate < M.seaLclMin ? ` → minimumdíj ${money(M.seaLclMin)}` : '', val(M.seaLclExtra) ? ` + járulékos ${money(M.seaLclExtra)}` : '']);
+  } else if (sea.mode === 'fcl' && sea.n !== null) {
+    li(ss, [`Hasznos térfogat: ${nf(seaC.volume, 1)} m³ × ${nf(S.seaFill, 0)}% = `, B(nf(sea.usable, 1) + ' m³')]);
+    li(ss, [`Térfogat szerint ${nf(res.volume, 2)} ÷ ${nf(sea.usable, 1)} → ${sea.byVol} db; tömeg szerint ${nf(res.gross, 0)} ÷ ${nf(seaC.payload, 0)} kg → ${sea.byWt} db`]);
+    li(ss, ['Szükséges: ', B(`${sea.n} × ${seaC.name}`), ` (kihasználtság ${nf(sea.util * 100, 1)}%)`, sea.util < 0.4 ? ' – ennyi árunál a gyűjtőáru (LCL) jellemzően olcsóbb.' : '']);
+    if (val(M.seaFclRate) !== null) li(ss, [`${sea.n} × ${money(M.seaFclRate)} = `, B(money(sea.n * M.seaFclRate)), val(M.seaFclExtra) ? ` + járulékos ${money(M.seaFclExtra)}` : '']);
+  } else li(ss, ['Hiányzó adat: bruttó tömeg vagy térfogat.']);
+  // Vasúti
+  const rs = $('railSteps'); rs.replaceChildren();
+  if (blockedMsg) li(rs, [blockedMsg]);
+  else if (rail.mode === 'lcl' && rail.chgM3 !== null) {
+    li(rs, ['Térfogat: ', B(nf(res.volume, 3) + ' m³'), ' · tömegből: ', B(nf(rail.wtM3, 3) + ' m³'), ` (${nf(res.gross, 1)} kg ÷ ${nf(S.railFactor, 0)} kg/m³)`]);
+    li(rs, ['Díjköteles térfogat = a nagyobb (', rail.basis, '): ', B(nf(rail.chgM3, 2) + ' m³')]);
+    if (val(M.railLclRate) !== null) li(rs, [`${nf(rail.chgM3, 2)} m³ × ${money(M.railLclRate)} = `, B(money(rail.chgM3 * M.railLclRate)), val(M.railLclMin) && rail.chgM3 * M.railLclRate < M.railLclMin ? ` → minimumdíj ${money(M.railLclMin)}` : '', val(M.railLclExtra) ? ` + járulékos ${money(M.railLclExtra)}` : '']);
+  } else if (rail.mode === 'fcl' && rail.n !== null) {
+    li(rs, [`Hasznos térfogat: ${nf(railC.volume, 1)} m³ × ${nf(S.railFill, 0)}% = `, B(nf(rail.usable, 1) + ' m³')]);
+    li(rs, [`Térfogat szerint ${rail.byVol} db, tömeg szerint ${rail.byWt} db → `, B(`${rail.n} × ${railC.name}`)]);
+    if (val(M.railFclRate) !== null) li(rs, [`${rail.n} × ${money(M.railFclRate)} = `, B(money(rail.n * M.railFclRate)), val(M.railFclExtra) ? ` + járulékos ${money(M.railFclExtra)}` : '']);
+  } else li(rs, ['Hiányzó adat: bruttó tömeg vagy térfogat.']);
+
+  const totals = { air: air.cost, sea: sea.cost, rail: rail.cost };
+  for (const [key, v] of Object.entries(totals)) {
+    const b = $(key + 'Total'); b.className = v === null ? 'na' : 'num';
+    b.textContent = v === null ? (blockedMsg ? 'Nem számolható' : 'Adj meg díjat és teljes adatot') : money(v);
+    $(key + 'TotalAlt').textContent = v !== null && S.cur !== 'USD' ? `≈ ${nf(v, 0)} USD` : '';
+  }
+  // Összehasonlító kártyák
+  const known = Object.values(totals).filter(v => v !== null);
+  const best = known.length ? Math.min(...known) : null, max = known.length ? Math.max(...known) : null;
+  const meta = {
+    air: { t: 'Légi', c: 'var(--air)', sub: air.chg !== null ? `díjsúly ${nf(air.chg, 1)} kg` : '' },
+    sea: { t: sea.mode === 'lcl' ? 'Tengeri · LCL' : 'Tengeri · FCL', c: 'var(--sea)', sub: sea.mode === 'lcl' ? (sea.rt !== null ? `${nf(sea.rt, 2)} RT` : '') : (sea.n ? `${sea.n} × ${seaC.name}` : '') },
+    rail: { t: rail.mode === 'lcl' ? 'Vasúti · LCL' : 'Vasúti · FCL', c: 'var(--rail)', sub: rail.mode === 'lcl' ? (rail.chgM3 !== null ? `${nf(rail.chgM3, 2)} m³` : '') : (rail.n ? `${rail.n} × ${railC.name}` : '') },
+  };
+  $('modes').replaceChildren(...Object.entries(totals).map(([key, v]) => {
+    const m = meta[key]; const card = el('button', 'mode' + (v !== null && v === best && known.length > 1 ? ' best' : '')); card.type = 'button';
+    card.style.setProperty('--c', m.c);
+    const lbl = el('div', 'lbl'); lbl.append(m.t, v !== null && v === best && known.length > 1 ? el('span', 'badge best', 'Legolcsóbb') : el('span', 'badge', D.transit[key]?.text || ''));
+    const vv = el('div', 'val num' + (v === null ? ' na' : ''), v === null ? 'Hiányzó adat' : money(v));
+    const mt = el('div', 'meta', m.sub);
+    const bar = el('div', 'bar'); const i = el('i'); i.style.width = v === null || !max ? '0%' : Math.max(4, (v / max) * 100) + '%'; bar.append(i);
+    card.append(lbl, vv, mt, bar);
+    card.addEventListener('click', () => $(key).scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    return card;
+  }));
+
+  // Figyelmeztetések
+  const w = [];
+  if (res.capacityWarning) w.push(`A megadott ${S.caseCount} ládába legfeljebb ${S.caseCount * S.caseCap} kabinet fér, de ${qty} van megadva. Növeld a ládaszámot vagy töröld a felülírást.`);
+  if (res.missing.length) w.push('Hiányzó adat: ' + res.missing.join(', ') + '. A sárga mezőket töltsd ki.');
+  const box = $('warn'); box.replaceChildren(); box.classList.toggle('show', w.length > 0);
+  if (w.length) { const ul = el('ul'); w.forEach(t => ul.append(el('li', null, t))); box.append(ul); }
+
+  // Dokk
+  $('dGross').textContent = res.gross === null ? 'hiányzik' : nf(res.gross, 0) + ' kg';
+  $('dAir').textContent = moneyShort(air.cost); $('dSea').textContent = moneyShort(sea.cost); $('dRail').textContent = moneyShort(rail.cost);
+  $('dock').classList.toggle('alert', w.length > 0);
+
+  window.__ledfuvar = { res, air, sea, rail, qty };
+  save();
+}
+
+function rateBadges() {
+  const r = D.rates;
+  const set = (id, rate) => {
+    const n = $(id); n.replaceChildren();
+    if (!rate) return;
+    const range = rate.low != null ? ` (sáv ${nf(rate.low, 0)}–${nf(rate.high, 0)} ${rate.unit})` : '';
+    n.append(`${rate.label}: ${rate.value == null ? 'nincs adat' : nf(rate.value, 2) + ' ' + rate.unit}${range}${rate.date ? ', ' + rate.date : ''} · `);
+    const url = safeUrl(rate.url); if (url) { const a = el('a', null, 'forrás'); a.href = url; a.target = '_blank'; a.rel = 'noopener'; n.append(a); }
+  };
+  set('airRateSrc', r.air); set('seaRateSrc', S.seaMode === 'lcl' ? r.seaLcl : r.seaFcl40); set('railRateSrc', S.railMode === 'lcl' ? r.railLcl : r.railFcl40);
+  for (const k of ['air', 'sea', 'rail']) $(k + 'Transit').textContent = D.transit[k] ? D.transit[k].text : '';
+  $('routeNote').textContent = `Útvonal: ${D.meta.route} ${D.rules.fillNote} Alternatív tengeri referencia: ${r.seaFcl40alt.label} ${nf(r.seaFcl40alt.value, 0)} USD/40' (${r.seaFcl40alt.date}).`;
+}
+function sourcesList() {
+  const seen = new Map();
+  const add = (label, url) => { const u = safeUrl(url); if (u && !seen.has(u)) seen.set(u, label); };
+  D.cabinets.forEach(c => add(`${c.brand} ${c.name} – ${c.source}`, c.url));
+  D.cases.forEach(c => add(`${c.name} – ${c.source}`, c.url));
+  D.accessories.forEach(a => add(`${a.name} – ${a.source}`, a.url));
+  D.packs.forEach(p => add(`${p.name} – ${p.source}`, p.url));
+  D.containers.forEach(c => add(`${c.name} konténer – ${c.source}`, c.url));
+  Object.values(D.rates).forEach(r => r && r.url && add(`${r.label} – ${r.source}`, r.url));
+  add(D.rules.airSource, D.rules.airUrl); add(D.rules.seaSource, D.rules.seaUrl); add(D.rules.railSource, D.rules.railUrl);
+  Object.values(D.transit).forEach(t => add(`Menetidő ${t.text} – ${t.source}`, t.url));
+  add(`Árfolyam – ${D.fx.source} (${D.fx.date})`, D.fx.url);
+  $('sources').replaceChildren(...[...seen].map(([u, l]) => { const li = el('li'); const a = el('a', null, l); a.href = u; a.target = '_blank'; a.rel = 'noopener'; li.append(a); return li; }));
+  $('srcMeta').textContent = `Adatok frissítve: ${D.meta.updated} · ${D.meta.note}`;
+}
+function setStatus(live) {
+  $('dataDot').classList.toggle('live', live);
+  $('dataText').textContent = `${live ? 'Friss adatok' : 'Beépített adatok'} · ${D.meta.updated}`;
+}
+
+function start(live) {
+  const def = defaults();
+  if (!S) S = def;
+  else {
+    // Új adatverziónál a nem szerkesztett díjak frissülnek
+    for (const k of Object.keys(def.money)) if (!S.edited?.[k] || !(k in S.money)) S.money[k] = def.money[k];
+    S.edited ||= {};
+    for (const k of Object.keys(def)) if (!(k in S)) S[k] = def[k];
+    if (!D.cabinets.some(c => c.id === S.cabId)) S.cabId = def.cabId;
+  }
+  if (S.fresh) { applyCabinet(true); S.fresh = false; }
+  bindStaticOnce(); chips(); renderItems(); renderPacks(); rateBadges(); sourcesList(); syncInputs(); setStatus(live); update();
+}
+let bound = false;
+function bindStaticOnce() { if (bound) { fillSelect($('cab'), D.cabinets, c => `${c.brand} · ${c.name}`, c => c.brand === 'Saját' ? 'Egyéb' : c.brand); return; } bound = true; bindStatic(); }
+
+// Indítás: beépített adat azonnal, majd friss adat a GitHubról (ha elérhető és újabb)
+start(false);
+(async () => {
+  try {
+    const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 6000);
+    const r = await fetch(DATA_URL + '?t=' + Date.now(), { signal: ctl.signal, cache: 'no-store' }); clearTimeout(t);
+    if (!r.ok) throw new Error(r.status);
+    const remote = await r.json();
+    if (!remote?.meta?.updated || !Array.isArray(remote.cabinets) || !remote.rates) throw new Error('formátum');
+    if (remote.meta.updated >= D.meta.updated) { D = remote; start(true); } else setStatus(false);
+  } catch (e) { setStatus(false); }
+})();
+</script>
+</body>
+</html>

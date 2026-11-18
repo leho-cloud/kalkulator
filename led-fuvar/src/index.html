@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#080c16">
+<title>LED-fal súly- és fuvarkalkulátor | TZSVTAV</title>
+<meta name="description" content="LED-fal súly-, térfogat- és fuvarköltség-becslés légi, tengeri és vasúti szállításhoz, nyilvános adatokból.">
+<style>/*__CSS__*/</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><i aria-hidden="true"></i>TZSVTAV <small>LED-fal fuvarkalkulátor</small></div>
+    <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
+  </div>
+  <div class="wrap"><nav class="steps" aria-label="Lépések">
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-forras"><b>i</b>Források</a>
+  </nav></div>
+</header>
+
+<main class="wrap">
+  <section class="hero" id="s-top">
+    <h1>LED-fal súly és fuvarköltség</h1>
+    <p>Válassz kabinetet, add hozzá a tartozékokat és a ládákat. A kalkulátor kiszámolja a bruttó tömeget, a térfogatot és a légi, tengeri, illetve vasúti fuvardíjat, lépésenkénti levezetéssel.</p>
+  </section>
+
+  <div class="summary">
+    <dl class="kpis" id="kpis" aria-live="polite"></dl>
+    <div class="modes" id="modes"></div>
+  </div>
+  <div class="warn" id="warn" role="status"></div>
+
+  <section class="card panel" id="s-fal">
+    <div class="card-h"><span class="no">1</span><div><h2>LED-fal</h2><p>Kabinet vagy modul, darabszám vagy falméret alapján</p></div></div>
+    <div class="grid">
+      <label class="c2">LED-kabinet / modul<select id="cab"></select></label>
+      <label>Egységtömeg<span class="unit"><input id="cabKg" type="number" min="0" step="any" inputmode="decimal"><em>kg/db</em></span></label>
+      <label>Megadás módja<span class="seg" role="group" aria-label="Megadás módja"><button type="button" id="byQty" aria-pressed="true">Darab</button><button type="button" id="byWall" aria-pressed="false">Falméret</button></span></label>
+      <label id="qtyBox">Darabszám<span class="unit"><input id="qty" type="number" min="0" step="1" inputmode="numeric" value="24"><em>db</em></span></label>
+      <label id="wBox" hidden>Fal szélessége<span class="unit"><input id="wallW" type="number" min="0" step="any" inputmode="decimal" value="6"><em>m</em></span></label>
+      <label id="hBox" hidden>Fal magassága<span class="unit"><input id="wallH" type="number" min="0" step="any" inputmode="decimal" value="3"><em>m</em></span></label>
+      <label id="cwBox">Kabinet szélesség<span class="unit"><input id="cabW" type="number" min="0" step="any" inputmode="decimal"><em>mm</em></span></label>
+      <label id="chBox">Kabinet magasság<span class="unit"><input id="cabH" type="number" min="0" step="any" inputmode="decimal"><em>mm</em></span></label>
+    </div>
+    <div class="info" id="wallInfo" hidden></div>
+    <p class="src" id="cabSrc"></p>
+  </section>
+
+  <section class="card panel" id="s-tart">
+    <div class="card-h"><span class="no">2</span><div><h2>Tartozékok</h2><p>Rigg, truss, kábel, csavar, lemez, saját tétel</p></div></div>
+    <div class="rows" id="items"></div>
+    <div class="chips" id="itemChips"></div>
+  </section>
+
+  <section class="card panel" id="s-csom">
+    <div class="card-h"><span class="no">3</span><div><h2>Csomagolás</h2><p>LED-ládák és külön csomagok (rackláda, tartozékdoboz, raklap)</p></div></div>
+    <div class="grid">
+      <label class="c2">LED-láda<select id="case"></select></label>
+      <label>Kapacitás<span class="unit"><input id="caseCap" type="number" min="1" step="1" inputmode="numeric"><em>db/láda</em></span></label>
+      <label>Ládaszám (felülírás)<span class="unit"><input id="caseCount" type="number" min="0" step="1" inputmode="numeric" placeholder="Automatikus"><em>db</em></span></label>
+      <label>Üres láda tömege<span class="unit"><input id="caseTare" type="number" min="0" step="any" inputmode="decimal"><em>kg</em></span></label>
+      <label>Belső csomagolás<span class="unit"><input id="caseFill" type="number" min="0" step="any" inputmode="decimal" value="0"><em>kg/láda</em></span></label>
+      <label>Hossz<span class="unit"><input id="caseL" type="number" min="0" step="any" inputmode="decimal"><em>cm</em></span></label>
+      <label>Szélesség<span class="unit"><input id="caseWd" type="number" min="0" step="any" inputmode="decimal"><em>cm</em></span></label>
+      <label>Magasság<span class="unit"><input id="caseHt" type="number" min="0" step="any" inputmode="decimal"><em>cm</em></span></label>
+    </div>
+    <div class="info" id="caseInfo"></div>
+    <p class="src" id="caseSrc"></p>
+    <div class="subt">Külön csomagok</div>
+    <div class="rows" id="packs"></div>
+    <div class="chips" id="packChips"></div>
+  </section>
+
+  <section class="card panel" id="s-fuvar">
+    <div class="card-h"><span class="no">4</span><div><h2>Fuvar</h2><p>Kína → Észak-Európa piaci referencia, saját ajánlattal felülírható</p></div></div>
+    <div class="fx">
+      <label style="width:auto">Pénznem<span class="seg" role="group" aria-label="Pénznem"><button type="button" data-cur="HUF" aria-pressed="false">HUF</button><button type="button" data-cur="EUR" aria-pressed="false">EUR</button><button type="button" data-cur="USD" aria-pressed="true">USD</button></span></label>
+      <span class="fxnote" id="fxNote"></span>
+    </div>
+    <div class="freight">
+      <article class="fcard" id="air" style="--c:var(--air)">
+        <h3>✈ Légi fuvar <span id="airTransit"></span></h3>
+        <div class="grid">
+          <label>Egységdíj<span class="unit"><input data-money="airRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit>/kg</em></span></label>
+          <label>Térfogati osztó<span class="unit"><input id="airDiv" type="number" min="1" step="any" inputmode="decimal"><em>cm³/kg</em></span></label>
+          <label>Minimumdíj<span class="unit"><input data-money="airMin" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Járulékos költség<span class="unit"><input data-money="airExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <p class="ratebadge" id="airRateSrc"></p>
+        <ol class="steps-out" id="airSteps"></ol>
+        <div class="total"><span>Becsült légi fuvardíj</span><div><b id="airTotal">–</b><small id="airTotalAlt"></small></div></div>
+      </article>
+
+      <article class="fcard" id="sea" style="--c:var(--sea)">
+        <h3>⚓ Tengeri fuvar <span id="seaTransit"></span></h3>
+        <div style="margin-top:10px"><span class="seg" role="group" aria-label="Tengeri mód"><button type="button" data-sea="lcl" aria-pressed="true">Gyűjtőáru (LCL)</button><button type="button" data-sea="fcl" aria-pressed="false">Konténer (FCL)</button></span></div>
+        <div class="grid" id="seaLclBox">
+          <label>Egységdíj<span class="unit"><input data-money="seaLclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit>/RT</em></span></label>
+          <label>W/M arány<span class="unit"><input id="seaWM" type="number" min="1" step="any" inputmode="decimal"><em>kg/m³</em></span></label>
+          <label>Minimumdíj<span class="unit"><input data-money="seaLclMin" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Járulékos költség<span class="unit"><input data-money="seaLclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <div class="grid" id="seaFclBox" hidden>
+          <label class="c2">Konténer<select id="seaCont"></select></label>
+          <label>Díj / konténer<span class="unit"><input data-money="seaFclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Kihasználtság<span class="unit"><input id="seaFill" type="number" min="1" max="100" step="1" inputmode="numeric"><em>%</em></span></label>
+          <label class="c2">Járulékos költség<span class="unit"><input data-money="seaFclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <p class="ratebadge" id="seaRateSrc"></p>
+        <ol class="steps-out" id="seaSteps"></ol>
+        <div class="total"><span>Becsült tengeri fuvardíj</span><div><b id="seaTotal">–</b><small id="seaTotalAlt"></small></div></div>
+      </article>
+
+      <article class="fcard" id="rail" style="--c:var(--rail)">
+        <h3>🚆 Vasúti fuvar <span id="railTransit"></span></h3>
+        <div style="margin-top:10px"><span class="seg" role="group" aria-label="Vasúti mód"><button type="button" data-rail="lcl" aria-pressed="true">Gyűjtőáru (LCL)</button><button type="button" data-rail="fcl" aria-pressed="false">Konténer (FCL)</button></span></div>
+        <div class="grid" id="railLclBox">
+          <label>Egységdíj<span class="unit"><input data-money="railLclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit>/m³</em></span></label>
+          <label>Térfogati tényező<span class="unit"><input id="railFactor" type="number" min="1" step="any" inputmode="decimal"><em>kg/m³</em></span></label>
+          <label>Minimumdíj<span class="unit"><input data-money="railLclMin" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Járulékos költség<span class="unit"><input data-money="railLclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <div class="grid" id="railFclBox" hidden>
+          <label class="c2">Konténer<select id="railCont"></select></label>
+          <label>Díj / konténer<span class="unit"><input data-money="railFclRate" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+          <label>Kihasználtság<span class="unit"><input id="railFill" type="number" min="1" max="100" step="1" inputmode="numeric"><em>%</em></span></label>
+          <label class="c2">Járulékos költség<span class="unit"><input data-money="railFclExtra" type="number" min="0" step="any" inputmode="decimal"><em data-cur-unit></em></span></label>
+        </div>
+        <p class="ratebadge" id="railRateSrc"></p>
+        <ol class="steps-out" id="railSteps"></ol>
+        <div class="total"><span>Becsült vasúti fuvardíj</span><div><b id="railTotal">–</b><small id="railTotalAlt"></small></div></div>
+      </article>
+    </div>
+    <p class="src" id="routeNote"></p>
+  </section>
+
+  <section class="card panel" id="s-forras">
+    <div class="card-h"><span class="no">i</span><div><h2>Források és frissítés</h2><p id="srcMeta"></p></div></div>
+    <ul class="sources" id="sources"></ul>
+  </section>
+  <footer>A becslés tájékoztató. A végleges díjat a fuvarozó ajánlata, a mért csomagadatok és a pótdíjak határozzák meg. Az indexek spot-piaci átlagok, nem ajánlatok.</footer>
+</main>
+
+<nav class="dock" id="dock" aria-label="Összesítő">
+  <a href="#s-top"><span>Bruttó</span><b id="dGross">–</b></a>
+  <a href="#air"><span>Légi</span><b id="dAir">–</b></a>
+  <a href="#sea"><span>Tengeri</span><b id="dSea">–</b></a>
+  <a href="#rail"><span>Vasúti</span><b id="dRail">–</b></a>
+</nav>
+<script type="module">/*__JS__*/</script>
+</body>
+</html>
