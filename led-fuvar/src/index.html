@@ -15,7 +15,7 @@
     <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
   </div>
   <div class="wrap"><nav class="steps" aria-label="Lépések">
-    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-ugyfel"><b>5</b>Ügyfélnek</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-forras"><b>i</b>Források</a>
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-ugyfel"><b>5</b>Ügyfélnek</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-szall"><b>≡</b>Szállítmányozók</a><a href="#s-forras"><b>i</b>Források</a>
   </nav></div>
 </header>
 
@@ -173,6 +173,13 @@
       <input type="search" id="gSearch" placeholder="Keresés: EXW, CFS, W/M, THC, vámkezelés…" autocomplete="off">
       <div id="gList"></div>
     </div>
+  </section>
+
+  <section class="card panel" id="s-szall">
+    <div class="card-h"><span class="no">≡</span><div><h2>Szállítmányozók Kínából, gyűjtőkonténerrel</h2><p id="fwdMeta"></p></div></div>
+    <div class="seg" id="fwdFilter" role="group" aria-label="Szűrés"><button type="button" data-f="all" aria-pressed="true">Mind</button><button type="button" data-f="Tengeri" aria-pressed="false">Tengeri</button><button type="button" data-f="Vasúti" aria-pressed="false">Vasúti</button><button type="button" data-f="hu" aria-pressed="false">Magyar tulajdonú</button></div>
+    <div class="fwd-grid" id="fwdList"></div>
+    <p class="src" id="fwdNote"></p>
   </section>
 
   <section class="card panel" id="s-forras">

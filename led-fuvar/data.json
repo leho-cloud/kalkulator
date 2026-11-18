@@ -672,5 +672,260 @@
         "url": "https://www.chrobinson.com/en-au/resources/insights-and-advisories/north-america-freight-insights/nov-2026-freight-market-update/ocean/"
       }
     ]
+  },
+  "forwarders": {
+    "updated": "2026-11-18",
+    "note": "Nyilvános források alapján összegyűjtött lista, nem minősítés és nem ajánlás. Díjat és aktuális menetrendet csak ajánlatkérésre adnak.",
+    "list": [
+      {
+        "name": "United Shipping Hungária Kft.",
+        "tag": "Magyar tulajdonú",
+        "modes": [
+          "Tengeri LCL",
+          "Tengeri FCL",
+          "Vasúti LCL",
+          "Vasúti FCL"
+        ],
+        "facts": [
+          "Magyar tulajdonú szállítmányozó, fő profil a tengeri logisztika.",
+          "Gyűjtő- és teljes konténer ügynökhálózaton keresztül; vasúton Lengyelországon át Budapestre.",
+          "Eredeti fuvarokmány (B/L) vasúton is; saját operátor szállítmányonként.",
+          "2220 Vecsés, Lőrinci u. 154 „C” ép."
+        ],
+        "links": [
+          {
+            "label": "Ajánlatkérés",
+            "url": "https://unitedshipping.eu/ajanlatkeres"
+          },
+          {
+            "label": "Vasúti szállítmányozás",
+            "url": "https://unitedshipping.eu/szolgaltatasok/szallitmanyozas/vasuti-szallitmanyozas/"
+          },
+          {
+            "label": "Tengeri szállítmányozás",
+            "url": "https://unitedshipping.eu/szolgaltatasok/szallitmanyozas/tengeri-szallitmanyozas/"
+          }
+        ]
+      },
+      {
+        "name": "NX Cargo-Partner Hungary Kft.",
+        "tag": "Nemzetközi, magyar leányvállalat",
+        "modes": [
+          "Tengeri LCL",
+          "Vasúti LCL",
+          "Légi"
+        ],
+        "facts": [
+          "Gyál, Goodman Business Park: 36 000 m² raktár, több mint 200 munkatárs, ISO 9001 és AEO-C.",
+          "Tengeri gyűjtőjáratok Koperen át többek között Shenzhenből, Shanghaiból, Hongkongból, Ningbóból és Xiamenből.",
+          "Vasúti gyűjtőkonténer Kínából Közép- és Kelet-Európába (Shanghai/Shenzhen → Dunajská Streda).",
+          "Hetente háromszor charter légi járat Hongkong → Budapest."
+        ],
+        "links": [
+          {
+            "label": "Budapesti telephelyek",
+            "url": "https://www.cargo-partner.com/locations/budapest-warehouse"
+          },
+          {
+            "label": "Vasúti LCL (PDF)",
+            "url": "https://www.cargo-partner.com/fileadmin/public/Railfreight_Insights_Visuals/CP_RAIL_LCL_Shanghai_Dunajska_Streda_landscape.pdf"
+          },
+          {
+            "label": "Vasúti piaci hírek",
+            "url": "https://www.cargo-partner.com/railfreight-insights"
+          }
+        ]
+      },
+      {
+        "name": "DACHSER (Air & Sea Logistics Hungary)",
+        "tag": "Nemzetközi, magyar iroda",
+        "modes": [
+          "Tengeri LCL",
+          "Vasúti"
+        ],
+        "facts": [
+          "Hetente indulnak gyűjtőkonténerek Shanghaiból és Ningbóból, közvetlen budapesti érkezéssel.",
+          "Az ázsiai kollégák intézik a felvételt és a berakodást."
+        ],
+        "links": [
+          {
+            "label": "Közvetlen LCL Ázsia–Magyarország (cikk)",
+            "url": "https://dailynewshungary.com/direct-lcl-connections-hungary-asia"
+          }
+        ]
+      },
+      {
+        "name": "GEODIS Hungary Logistics Kft.",
+        "tag": "Nemzetközi, magyar leányvállalat",
+        "modes": [
+          "Tengeri LCL",
+          "Tengeri FCL",
+          "Vasúti LCL",
+          "Vasúti FCL",
+          "Légi"
+        ],
+        "facts": [
+          "Tengeri FCL és LCL; budapesti iroda légi, tengeri, vámkezelési és projektlogisztikai szolgáltatással.",
+          "Kína–Európa vasút 15–25 nap; LCL lengyel és német elosztóközpontokon át.",
+          "Vasúton 1–8. osztályú veszélyes áru tilos, 9. osztály csak MSDS-jóváhagyással.",
+          "ISO 9001, AEO."
+        ],
+        "links": [
+          {
+            "label": "Tengeri szállítmányozás",
+            "url": "https://geodis.com/hu-hu/szallitasi-szolgaltatasok/tengeri-szallitmanyozas"
+          },
+          {
+            "label": "Vasúti szállítás",
+            "url": "https://geodis.com/de-en/transport-services/rail-transport"
+          },
+          {
+            "label": "Budapesti iroda",
+            "url": "https://geodis.com/be-fr/agency/geodis-hungary-logistics-kft-4"
+          }
+        ]
+      },
+      {
+        "name": "ECU Worldwide Hungary",
+        "tag": "Nemzetközi gyűjtőáru-specialista",
+        "modes": [
+          "Tengeri LCL",
+          "Tengeri FCL",
+          "Légi"
+        ],
+        "facts": [
+          "LCL-re szakosodott hálózat, több mint 530 célállomással.",
+          "Külön LCL import ügyintézés Budapesten.",
+          "1211 Budapest, Szikratávíró u. 17–21. · LCL import: +36 30 417 3888 · ajánlat: +36 30 627 5729"
+        ],
+        "links": [
+          {
+            "label": "Budapesti iroda",
+            "url": "https://ecuworldwide.com/networkcity/hungary"
+          }
+        ]
+      },
+      {
+        "name": "CEVA Logistics Hungary",
+        "tag": "Nemzetközi, magyar leányvállalat",
+        "modes": [
+          "Tengeri LCL"
+        ],
+        "facts": [
+          "Heti gyűjtőjárat Shanghaiból Koperen át, onnan vasúton Budapestre.",
+          "A budapesti CEVA-raktár a gyűjtőraktár (CFS), külső átrakás nélkül.",
+          "A járat 2016-os bejelentés: aktuális állapotát kérdezd meg."
+        ],
+        "links": [
+          {
+            "label": "Shanghai–Budapest LCL (cikk)",
+            "url": "https://www.freightwaves.com/news/ceva-starts-shanghai-budapest-lcl-service"
+          }
+        ]
+      },
+      {
+        "name": "DHL Global Forwarding Magyarország",
+        "tag": "Nemzetközi, magyar leányvállalat",
+        "modes": [
+          "Tengeri LCL",
+          "Vasúti",
+          "Tenger-légi"
+        ],
+        "facts": [
+          "Tengeri gyűjtőáru (DHL Ocean LCL), magyar nyelvű ügyfélanyagokkal.",
+          "Vasút Kína és Európa között; veszélyes árut nem vállal, vámkezelés opcionális.",
+          "SeaAir Ázsiából: legalább heti egy járat útvonalanként."
+        ],
+        "links": [
+          {
+            "label": "Tengeri LCL",
+            "url": "https://www.dhl.com/hu-hu/home/global-forwarding/termekek-es-szolgaltatasok/tengeri-szallitmanyozas/less-than-container-load.html"
+          },
+          {
+            "label": "Vasúti áruszállítás",
+            "url": "https://www.dhl.com/hu-hu/home/global-forwarding/termekek-es-szolgaltatasok/vasuti-aruszallitas.html"
+          }
+        ]
+      },
+      {
+        "name": "Rail Cargo Group / Rail Cargo Hungaria",
+        "tag": "Vasúti szolgáltató (ÖBB-csoport)",
+        "modes": [
+          "Vasúti LCL",
+          "Vasúti FCL"
+        ],
+        "facts": [
+          "TransFER LCL: gyűjtőkonténer Xi'an–Bécs, gyűjtőraktártól gyűjtőraktárig kb. 22–24 nap.",
+          "A Rail Cargo Hungaria Xi'an–Budapest konténervonatot indított."
+        ],
+        "links": [
+          {
+            "label": "LCL Kínából",
+            "url": "https://www.railcargo.com/en/services/intermodal-logistics/eurasia/lcl-transports-china"
+          },
+          {
+            "label": "TransFER China–Vienna (PDF)",
+            "url": "https://www.railcargo.com/cs/dms/factsheets/factsheet-transfer-china-vienna-en.pdf"
+          }
+        ]
+      },
+      {
+        "name": "Kuehne+Nagel",
+        "tag": "Nemzetközi",
+        "modes": [
+          "Tengeri LCL",
+          "Vasúti LCL"
+        ],
+        "facts": [
+          "Saját LCL-hálózat: 430 heti gyűjtőjárat az ázsiai–csendes-óceáni térségből.",
+          "Vasúti gyűjtő (KN Eurasia Express) Wuhanból Hamburgba és Małaszewiczébe."
+        ],
+        "links": [
+          {
+            "label": "LCL tájékoztató (PDF)",
+            "url": "https://assets.kuehne-nagel.com/f/331466/x/18afd30a91/services-sea-freight-lcl-flyer.pdf"
+          },
+          {
+            "label": "Hír az LCL-hálózatról",
+            "url": "https://newsroom.kuehne-nagel.com/kuehne--nagel-expands-lcl-activities/"
+          }
+        ]
+      },
+      {
+        "name": "Gebrüder Weiss",
+        "tag": "Nemzetközi",
+        "modes": [
+          "Tengeri LCL",
+          "Vasúti"
+        ],
+        "facts": [
+          "Saját tengeri gyűjtőáru-termék, fix lekötött hajóhellyel a fő útvonalakon.",
+          "180 saját telephely; Ázsia felé vasúti (Selyemút) alternatíva is."
+        ],
+        "links": [
+          {
+            "label": "LCL szolgáltatás",
+            "url": "https://info.gw-world.com/seafreight-lcl"
+          }
+        ]
+      },
+      {
+        "name": "Maurice Ward",
+        "tag": "Nemzetközi, magyar iroda",
+        "modes": [
+          "Tengeri",
+          "Vasúti"
+        ],
+        "facts": [
+          "Magyar nyelvű tengeri és vasúti szállítási feltételek; kevés nyilvános adat a gyűjtőjáratokról, kérdezz rá."
+        ],
+        "links": [
+          {
+            "label": "Tengeri és vasúti feltételek (PDF)",
+            "url": "https://mauriceward.com/hu/terms_conds_hu_oc_rl_hu_en.pdf"
+          }
+        ]
+      }
+    ]
   }
 }

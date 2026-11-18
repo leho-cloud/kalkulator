@@ -344,4 +344,19 @@ body.doc-open{overflow:hidden}
   .doc-tbl tr{display:table-row!important}
   .doc-tbl td{display:table-cell!important;border-bottom:1px solid #e4e4e7!important}
 }
+/* Szállítmányozók */
+#fwdFilter{margin-bottom:12px;flex-wrap:wrap}
+.fwd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.fwd{border:1px solid var(--line);border-radius:var(--rs);background:var(--card2);padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.fwd-h{display:flex;flex-direction:column;gap:4px}
+.fwd-h h3{margin:0;font-size:1rem}
+.fwd-tag{font-size:.74rem;color:var(--muted)}
+.fwd-tag.hu{color:var(--ok);font-weight:650}
+.fwd-modes{display:flex;flex-wrap:wrap;gap:5px}
+.fwd-mode{font-size:.7rem;padding:2px 8px;border-radius:999px;background:var(--line);color:var(--text)}
+.fwd-mode.lcl{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent)}
+.fwd ul{margin:0;padding-left:18px;color:var(--muted);font-size:.84rem}
+.fwd li{margin:2px 0}
+.fwd-links{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:auto;padding-top:4px;font-size:.84rem}
+.fwd-links a{font-weight:600}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode .bar i{transition:none}}
