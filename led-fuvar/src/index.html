@@ -15,7 +15,7 @@
     <div class="status" id="status" title="Adatforrás állapota"><span class="dot" id="dataDot"></span><span id="dataText">Adatok betöltése…</span></div>
   </div>
   <div class="wrap"><nav class="steps" aria-label="Lépések">
-    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-forras"><b>i</b>Források</a>
+    <a href="#s-fal"><b>1</b>LED-fal</a><a href="#s-tart"><b>2</b>Tartozékok</a><a href="#s-csom"><b>3</b>Csomagolás</a><a href="#s-fuvar"><b>4</b>Fuvar</a><a href="#s-szotar"><b>?</b>Szótár</a><a href="#s-forras"><b>i</b>Források</a>
   </nav></div>
 </header>
 
@@ -133,6 +133,21 @@
       </article>
     </div>
     <p class="src" id="routeNote"></p>
+  </section>
+
+  <section class="card panel" id="s-szotar">
+    <div class="card-h"><span class="no">?</span><div><h2>Ajánlatértelmező és fuvarszótár</h2><p>Illeszd be a szállítmányozó ajánlatát: soronként megmagyarázza, mi mit jelent, és mennyibe kerül összesen</p></div></div>
+    <div class="qwrap">
+      <label class="qlbl" for="qText">Ajánlat szövege</label>
+      <textarea id="qText" rows="6" spellcheck="false" placeholder="pl. EXW Shenzhen - CFS BUD: 460 USD via Xian"></textarea>
+      <div class="qbtns"><button type="button" class="chip" id="qExample">Minta ajánlat</button><button type="button" class="chip" id="qClear">Törlés</button></div>
+      <div id="qOut" aria-live="polite"></div>
+    </div>
+    <div class="gwrap">
+      <h3 class="gh">Fuvarszótár</h3>
+      <input type="search" id="gSearch" placeholder="Keresés: EXW, CFS, W/M, THC, vámkezelés…" autocomplete="off">
+      <div id="gList"></div>
+    </div>
   </section>
 
   <section class="card panel" id="s-forras">

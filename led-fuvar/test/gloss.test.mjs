@@ -1,0 +1,32 @@
+import {createRequire} from 'node:module';
+import assert from 'node:assert/strict';
+const require=createRequire('/opt/node22/lib/node_modules/');
+const {chromium}=require('playwright');
+const url='file://'+new URL('../dist/index.html',import.meta.url).pathname;
+const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--no-sandbox']});
+const errors=[];
+for (const [name,vp] of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]) {
+  const ctx=await b.newContext({viewport:vp,deviceScaleFactor:2,isMobile:name==='mobile'});
+  const p=await ctx.newPage(); p.on('pageerror',e=>errors.push(name+': '+e.message));
+  await p.goto(url); await p.waitForTimeout(600);
+  const a=await p.evaluate(()=>window.__gloss.analyze(document.getElementById('qText').value));
+  assert.equal(a.filter(r=>r.type==='freight').length,2);
+  assert.equal(a.filter(r=>r.type==='fee').length,2);
+  assert.equal(a.filter(r=>r.type==='excluded').length,1);
+  const f=a.find(r=>r.type==='freight'); assert.equal(f.amt.v,460); assert.equal(f.amt.cur,'USD'); assert.equal(f.inc,'EXW'); assert.equal(f.via,'Xian'); assert.equal(f.from,'Shenzhen');
+  const txt=await p.textContent('#qOut');
+  assert.ok(txt.includes('518 €'),'átalány 460$+105€'); assert.ok(txt.includes('Nincs benne'));
+  assert.ok((await p.$$('#gList dt')).length>50); assert.equal(await p.evaluate(()=>document.querySelectorAll('#gList details[open]').length),0);
+  await p.click('#qOut .qterms a >> nth=0'); await p.waitForTimeout(300); assert.equal(await p.evaluate(()=>document.querySelectorAll('#gList details[open]').length),1);
+  await p.fill('#gSearch','W/M'); assert.ok((await p.$$('#gList dt')).length>=1);
+  await p.fill('#gSearch','');
+  await p.fill('#qText','Tengeri díj:\nFOB Shanghai - CY Hamburg: 1.250 USD / 40HC\nTHC 180 EUR\nISPS 10 USD\n+ delivery'); await p.waitForTimeout(100);
+  const a2=await p.evaluate(()=>window.__gloss.analyze(document.getElementById('qText').value));
+  assert.equal(a2[1].amt.v,1250); assert.equal(a2[1].amt.unit,'cntr'); assert.equal(a2.filter(r=>r.type==='fee').length,2);
+  await p.click('#qExample'); await p.evaluate(()=>document.querySelectorAll('#gList details').forEach((d,i)=>d.open=i===1));
+  await p.locator('#s-szotar').screenshot({path:`/tmp/gloss-${name}.png`});
+  await ctx.close();
+}
+await b.close();
+assert.deepEqual(errors,[]);
+console.log('gloss.test: ajánlatértelmező és szótár rendben (asztali, mobil). '+'');

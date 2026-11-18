@@ -351,6 +351,7 @@ function update() {
   $('dock').classList.toggle('alert', w.length > 0);
 
   window.__ledfuvar = { res, air, sea, rail, qty };
+  window.__qRefresh?.();
   save();
 }
 

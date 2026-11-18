@@ -2,7 +2,7 @@ import {createRequire} from 'node:module';
 import assert from 'node:assert/strict';
 const require=createRequire('/opt/node22/lib/node_modules/');
 const {chromium}=require('playwright');
-const url='file://'+new URL('../index.html',import.meta.url).pathname;
+const url='file://'+new URL('../dist/index.html',import.meta.url).pathname;
 const b=await chromium.launch({executablePath:'/usr/bin/google-chrome',args:['--no-sandbox']});
 const errors=[];
 for (const [name,vp] of [['desktop',{width:1440,height:1000}],['mobile',{width:390,height:844}]]) {

@@ -173,4 +173,57 @@ footer{margin:18px 0 40px;color:var(--dim);font-size:.78rem}
   .dock a:nth-child(4) b{color:var(--rail)}
   .dock.alert{box-shadow:0 -2px 0 #7a6224 inset}
 }
+/* Ajánlatértelmező + szótár */
+.qwrap{display:grid;gap:8px}
+.qlbl{display:block;color:var(--muted);font-size:.8rem}
+textarea#qText{width:100%;min-height:150px;padding:12px;border-radius:var(--rs);border:1px solid var(--line);background:#0a1120;color:var(--text);font:13.5px/1.55 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical}
+textarea#qText:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,209,255,.18)}
+.qbtns{display:flex;gap:8px;flex-wrap:wrap}
+.qlist{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.qlist li{border:1px solid var(--line);border-left:3px solid var(--line2);border-radius:var(--rs);padding:10px 12px;background:var(--card2)}
+.qlist li.q-freight{border-left-color:var(--rail)}
+.qlist li.q-fee{border-left-color:var(--accent2)}
+.qlist li.q-excluded{border-left-color:var(--warn)}
+.qline{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.qline code{font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--text);white-space:pre-wrap;word-break:break-word;flex:1 1 220px}
+.qtag{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--line);border-radius:999px;padding:2px 8px}
+.q-freight .qtag{color:var(--rail);background:color-mix(in srgb,var(--rail) 16%,transparent)}
+.q-fee .qtag{color:var(--accent2);background:color-mix(in srgb,var(--accent2) 18%,transparent)}
+.q-excluded .qtag{color:var(--warn);background:color-mix(in srgb,var(--warn) 16%,transparent)}
+.qamt{font-variant-numeric:tabular-nums;white-space:nowrap}
+.qex{margin:6px 0 0;color:var(--muted);font-size:.86rem}
+.qterms{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.qterms .chip{min-height:28px;padding:3px 10px;font-size:.76rem;text-decoration:none;border-style:solid}
+.qsum{margin-top:12px;padding:14px;border-radius:var(--rs);border:1px solid color-mix(in srgb,var(--accent) 35%,var(--line));background:color-mix(in srgb,var(--accent) 6%,var(--card2))}
+.qsum h3,.gh{margin:0 0 8px;font-size:1rem}
+.qtbl{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}
+.qopt{padding:10px 12px;border-radius:var(--rs);background:var(--card);border:1px solid var(--line)}
+.qopt>b{display:block;margin-bottom:6px;font-size:.9rem}
+.qopt p{margin:0}
+.qcalc{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.qcalc li{display:flex;justify-content:space-between;gap:10px;font-size:.84rem;color:var(--muted)}
+.qcalc li b{color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}
+.gwrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+#gSearch{margin-bottom:6px}
+.ggrp{margin-top:8px}
+.ggrp summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:46px;padding:8px 14px;border:1px solid var(--line);border-radius:var(--rs);background:var(--card2);cursor:pointer;list-style:none;font-weight:650;font-size:.92rem}
+.ggrp summary::-webkit-details-marker{display:none}
+.ggrp summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-left:4px;transition:transform .2s}
+.ggrp[open] summary::after{transform:rotate(-135deg)}
+.ggrp summary small{margin-left:auto;color:var(--dim);font-weight:500}
+.ggrp[open] summary{border-color:var(--line2)}
+.ggrp .gdl{margin-top:6px}
+.gdl{margin:0;display:grid;grid-template-columns:minmax(150px,230px) 1fr;border:1px solid var(--line);border-radius:var(--rs);overflow:hidden}
+.gdl dt,.gdl dd{margin:0;padding:10px 12px;border-top:1px solid var(--line);background:var(--card2)}
+.gdl dt:first-of-type,.gdl dt:first-of-type+dd{border-top:0}
+.gdl dt{display:flex;flex-direction:column;gap:2px;scroll-margin-top:130px;transition:background .3s}
+.gdl dt b{font-size:.95rem}
+.gdl dt span{color:var(--dim);font-size:.76rem}
+.gdl dd{color:var(--muted);font-size:.87rem}
+.gdl dt.hl,.gdl dt.hl+dd{background:color-mix(in srgb,var(--accent) 16%,var(--card2))}
+@media (max-width:720px){
+  .gdl{grid-template-columns:1fr}
+  .gdl dd{border-top:0;padding-top:0}
+  .qcalc li{flex-direction:column;gap:0}
+}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.mode .bar i{transition:none}}
